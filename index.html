@@ -3,1964 +3,859 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#1a0a00">
+<meta name="theme-color" content="#1c1410">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="比價神器">
-<meta name="description" content="台灣、日本、多幣別商品比價工具，含購物清單與免稅提醒">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
-<title>台日比價神器 Pro</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Shippori+Mincho:wght@400;700;800&display=swap" rel="stylesheet">
+<title>藥妝比價神器</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet">
 <style>
-/* ════════════════════════════════
-   ROOT VARIABLES
-════════════════════════════════ */
 :root {
-  --ink:        #1a0a00;
-  --ink-mid:    #4a3020;
-  --ink-light:  #8a7060;
-  --ink-faint:  #c8b8a8;
-  --paper:      #faf6f0;
-  --paper2:     #f2ece2;
-  --paper3:     #e8e0d4;
-  --red:        #c0392b;
-  --red-dark:   #922b21;
-  --red-light:  #f9ebe9;
-  --gold:       #9a7000;
-  --gold-bg:    #fdf6e3;
-  --green:      #1a6a3a;
-  --green-bg:   #e8f5ee;
-  --blue:       #1a4a8a;
-  --radius:     14px;
-  --radius-sm:  8px;
-  --sh-sm:      0 1px 4px rgba(26,10,0,.08);
-  --sh-md:      0 4px 20px rgba(26,10,0,.12);
-  --sh-lg:      0 16px 60px rgba(26,10,0,.18);
-
-  /* Category palette */
-  --c-food:    #b83020;
-  --c-beauty:  #7a3080;
-  --c-health:  #1a6a3a;
-  --c-daily:   #1a4a8a;
-  --c-fashion: #a05030;
-  --c-elec:    #1a6060;
-  --c-souvenir:#9a7000;
-  --c-other:   #5a5050;
-}
-
-/* ════════════════════════════════
-   RESET & BASE
-════════════════════════════════ */
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-
-html { scroll-behavior: smooth; }
-
-body {
-  font-family: 'Noto Sans TC', sans-serif;
-  background: var(--paper);
-  color: var(--ink);
-  min-height: 100vh;
-  min-height: 100dvh;
-  overflow-x: hidden;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Subtle washi paper grain */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 9999;
-  opacity: .6;
-}
-
-/* ════════════════════════════════
-   HEADER
-════════════════════════════════ */
-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: rgba(250,246,240,.94);
-  backdrop-filter: blur(20px) saturate(1.6);
-  -webkit-backdrop-filter: blur(20px) saturate(1.6);
-  border-bottom: 1px solid var(--paper3);
-  box-shadow: var(--sh-sm);
-}
-
-.header-main {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 20px;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  text-decoration: none;
-  color: inherit;
-}
-
-.logo-mark {
-  width: 42px;
-  height: 42px;
-  background: var(--red);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.3rem;
-  box-shadow: 0 3px 10px rgba(192,57,43,.3), inset 0 1px 0 rgba(255,255,255,.15);
-  flex-shrink: 0;
-}
-
-.logo-text h1 {
-  font-family: 'Shippori Mincho', serif;
-  font-size: 1.05rem;
-  font-weight: 800;
-  letter-spacing: .02em;
-  line-height: 1.2;
-  color: var(--ink);
-}
-
-.logo-text p {
-  font-size: .65rem;
-  color: var(--ink-light);
-  letter-spacing: .05em;
-  margin-top: 1px;
-}
-
-.header-btns {
-  display: flex;
-  gap: 7px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-/* ════════════════════════════════
-   CURRENCY BAR
-════════════════════════════════ */
-.rate-bar {
-  border-top: 1px solid var(--paper3);
-  background: var(--paper2);
-  padding: 9px 20px;
-  display: flex;
-  gap: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-}
-.rate-bar::-webkit-scrollbar { display: none; }
-
-.rate-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0 14px 0 0;
-  flex-shrink: 0;
-}
-
-.rate-item:not(:last-child) {
-  border-right: 1px solid var(--paper3);
-  margin-right: 14px;
-}
-
-.rate-label { font-size: .72rem; color: var(--ink-light); white-space: nowrap; }
-
-.rate-input {
-  width: 66px;
-  background: var(--paper);
-  border: 1px solid var(--paper3);
-  border-radius: 6px;
-  padding: 4px 6px;
-  font-family: 'Shippori Mincho', serif;
-  font-size: .82rem;
-  font-weight: 700;
-  color: var(--gold);
-  text-align: center;
-  outline: none;
-  transition: border-color .2s;
-}
-.rate-input:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(154,112,0,.1); }
-
-/* ════════════════════════════════
-   TABS
-════════════════════════════════ */
-.tabs {
-  border-top: 1px solid var(--paper3);
-  display: flex;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.tabs::-webkit-scrollbar { display: none; }
-
-.tab-btn {
-  flex-shrink: 0;
-  padding: 10px 20px;
-  font-family: inherit;
-  font-size: .8rem;
-  font-weight: 700;
-  color: var(--ink-light);
-  background: transparent;
-  border: none;
-  border-bottom: 3px solid transparent;
-  cursor: pointer;
-  transition: all .18s;
-  white-space: nowrap;
-  letter-spacing: .02em;
-}
-.tab-btn:hover { color: var(--ink); }
-.tab-btn.active { color: var(--red); border-bottom-color: var(--red); }
-
-.tab-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--red);
-  color: #fff;
-  font-size: .6rem;
-  font-weight: 900;
-  min-width: 16px;
-  height: 16px;
-  border-radius: 99px;
-  padding: 0 4px;
-  margin-left: 5px;
-  vertical-align: middle;
-}
-
-/* ════════════════════════════════
-   BUTTONS
-════════════════════════════════ */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 8px 14px;
-  border-radius: var(--radius-sm);
-  border: 1px solid transparent;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: .78rem;
-  font-weight: 700;
-  transition: all .18s;
-  white-space: nowrap;
-  letter-spacing: .02em;
-  -webkit-user-select: none;
-  user-select: none;
-}
-.btn:active { transform: scale(.97); }
-
-.btn-primary {
-  background: var(--red);
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(192,57,43,.25);
-}
-.btn-primary:hover { background: var(--red-dark); box-shadow: 0 4px 14px rgba(192,57,43,.35); }
-
-.btn-ghost {
-  background: transparent;
-  border-color: var(--paper3);
-  color: var(--ink-mid);
-}
-.btn-ghost:hover { border-color: var(--ink-faint); background: var(--paper2); }
-
-.btn-green {
-  background: var(--green-bg);
-  border-color: rgba(26,106,58,.2);
-  color: var(--green);
-}
-.btn-green:hover { background: #d4eddf; }
-
-.btn-gold {
-  background: var(--gold-bg);
-  border-color: rgba(154,112,0,.25);
-  color: var(--gold);
-}
-.btn-gold:hover { background: #faedc2; }
-
-.btn-sm { padding: 6px 11px; font-size: .72rem; }
-.btn-xs { padding: 4px 9px; font-size: .68rem; }
-
-/* ════════════════════════════════
-   MAIN LAYOUT
-════════════════════════════════ */
-.page { display: none; }
-.page.active { display: block; }
-
-.container {
-  max-width: 1320px;
-  margin: 0 auto;
-  padding: 20px 18px 100px;
-}
-
-/* ════════════════════════════════
-   TOOLBAR
-════════════════════════════════ */
-.toolbar {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-.search-wrap { flex: 1; min-width: 180px; position: relative; }
-
-.search-ico {
-  position: absolute;
-  left: 11px; top: 50%;
-  transform: translateY(-50%);
-  color: var(--ink-light);
-  font-size: .85rem;
-  pointer-events: none;
-}
-
-.search-box {
-  width: 100%;
-  background: #fff;
-  border: 1px solid var(--paper3);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px 10px 34px;
-  font-family: inherit;
-  font-size: .85rem;
-  color: var(--ink);
-  outline: none;
-  box-shadow: var(--sh-sm);
-  transition: border-color .2s, box-shadow .2s;
-}
-.search-box:focus { border-color: var(--red); box-shadow: 0 0 0 3px rgba(192,57,43,.08); }
-.search-box::placeholder { color: var(--ink-faint); }
-
-.sort-select {
-  background: #fff;
-  border: 1px solid var(--paper3);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  font-family: inherit;
-  font-size: .78rem;
-  color: var(--ink);
-  outline: none;
-  cursor: pointer;
-  box-shadow: var(--sh-sm);
-}
-
-/* ════════════════════════════════
-   CATEGORY CHIPS
-════════════════════════════════ */
-.chips {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin-bottom: 18px;
-}
-
-.chip {
-  padding: 5px 13px;
-  border-radius: 99px;
-  font-size: .72rem;
-  font-weight: 700;
-  cursor: pointer;
-  border: 2px solid transparent;
-  background: #fff;
-  color: var(--ink-mid);
-  box-shadow: var(--sh-sm);
-  transition: all .15s;
-  -webkit-user-select: none;
-  user-select: none;
-}
-.chip:hover { box-shadow: var(--sh-md); transform: translateY(-1px); }
-.chip.active { color: #fff !important; box-shadow: var(--sh-md); }
-
-/* ════════════════════════════════
-   BANNERS
-════════════════════════════════ */
-.banner {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 12px 16px;
-  border-radius: var(--radius);
-  font-size: .78rem;
-  line-height: 1.55;
-  margin-bottom: 18px;
-  border: 1px solid transparent;
-}
-
-.banner-tax {
-  background: var(--gold-bg);
-  border-color: rgba(154,112,0,.22);
-  color: #6a4a00;
-}
-
-.banner-offline {
-  background: #e8f0fa;
-  border-color: rgba(26,74,138,.2);
-  color: var(--blue);
-}
-
-.banner-ico { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
-
-/* ════════════════════════════════
-   CATEGORY SECTION
-════════════════════════════════ */
-.cat-section { margin-bottom: 34px; }
-
-.cat-head {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 13px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--paper3);
-}
-
-.cat-bar {
-  width: 4px; height: 20px;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
-
-.cat-name {
-  font-family: 'Shippori Mincho', serif;
-  font-size: .88rem;
-  font-weight: 700;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-}
-
-.cat-num {
-  margin-left: auto;
-  font-size: .68rem;
-  color: var(--ink-light);
-  background: var(--paper2);
-  border: 1px solid var(--paper3);
-  padding: 2px 9px;
-  border-radius: 99px;
-}
-
-/* ════════════════════════════════
-   PRODUCT GRID
-════════════════════════════════ */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 13px;
-}
-
-/* ════════════════════════════════
-   PRODUCT CARD
-════════════════════════════════ */
-.card {
-  background: #fff;
-  border: 1px solid var(--paper3);
-  border-radius: var(--radius);
-  overflow: hidden;
-  box-shadow: var(--sh-sm);
-  transition: transform .2s, box-shadow .2s;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-}
-.card:hover { transform: translateY(-2px); box-shadow: var(--sh-md); }
-.card.in-cart { border-color: rgba(26,106,58,.4); box-shadow: 0 0 0 2px rgba(26,106,58,.12); }
-
-.card-accent { height: 3px; width: 100%; }
-
-.card-thumb {
-  width: 100%;
-  height: 148px;
-  background: var(--paper2);
-  border-bottom: 1px solid var(--paper3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.8rem;
-  color: var(--ink-faint);
-  overflow: hidden;
-  position: relative;
-  flex-shrink: 0;
-  cursor: pointer;
+  --bg:#f7f3ee;--bg2:#efe9e0;--bg3:#e5ddd2;
+  --surface:#ffffff;--border:#ddd5c8;--border2:#c8bfb0;
+  --ink:#1c1410;--ink2:#4a3f32;--ink3:#8a7a68;--ink4:#b8a898;
+  --red:#c0392b;--red2:#e74c3c;--red-bg:#fdf0ee;
+  --gold:#9a7830;--gold-bg:#fdf6e3;
+  --green:#1a6a3a;--green-bg:#e8f5ee;
+  --blue:#1a4a8a;
+  --shadow:0 2px 12px rgba(28,20,16,.08);
+  --shadow2:0 8px 32px rgba(28,20,16,.12);
+  --r:12px;--r2:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--ink);min-height:100dvh;-webkit-tap-highlight-color:transparent;}
+
+header{position:sticky;top:0;z-index:100;background:rgba(247,243,238,.95);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);box-shadow:var(--shadow);}
+.hd-top{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;gap:10px;flex-wrap:wrap;}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-bear{width:40px;height:40px;border-radius:12px;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;}
+.logo h1{font-family:'Noto Serif TC',serif;font-size:1rem;font-weight:700;}
+.logo p{font-size:.62rem;color:var(--ink3);margin-top:1px;}
+.hd-btns{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+
+.rate-bar{border-top:1px solid var(--border);background:var(--bg2);padding:8px 18px;display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--ink3);flex-wrap:wrap;}
+.rate-input{width:70px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:4px 7px;font-family:'Noto Serif TC',serif;font-size:.82rem;font-weight:700;color:var(--gold);text-align:center;outline:none;transition:border-color .2s;}
+.rate-input:focus{border-color:var(--gold);}
+
+.tabs{border-top:1px solid var(--border);display:flex;overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex-shrink:0;padding:9px 18px;font-family:inherit;font-size:.78rem;font-weight:700;color:var(--ink3);background:transparent;border:none;border-bottom:3px solid transparent;cursor:pointer;transition:all .18s;white-space:nowrap;}
+.tab:hover{color:var(--ink);}
+.tab.on{color:var(--red);border-bottom-color:var(--red);}
+.tab-n{display:inline-flex;align-items:center;justify-content:center;background:var(--red);color:#fff;font-size:.58rem;font-weight:900;min-width:15px;height:15px;border-radius:99px;padding:0 4px;margin-left:4px;vertical-align:middle;}
+
+.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:var(--r2);border:1px solid transparent;cursor:pointer;font-family:inherit;font-size:.76rem;font-weight:700;transition:all .18s;white-space:nowrap;-webkit-user-select:none;user-select:none;}
+.btn:active{transform:scale(.97);}
+.btn-red{background:var(--red);color:#fff;box-shadow:0 2px 8px rgba(192,57,43,.2);}
+.btn-red:hover{background:var(--red2);}
+.btn-ghost{background:var(--surface);border-color:var(--border2);color:var(--ink2);}
+.btn-ghost:hover{border-color:var(--ink3);}
+.btn-green{background:var(--green-bg);border-color:rgba(26,106,58,.2);color:var(--green);}
+.btn-gold{background:var(--gold-bg);border-color:rgba(154,120,48,.25);color:var(--gold);}
+.btn-sm{padding:6px 10px;font-size:.7rem;}
+.btn-xs{padding:4px 8px;font-size:.65rem;}
+
+.page{display:none;}.page.on{display:block;}
+.wrap{max-width:1280px;margin:0 auto;padding:18px 16px 90px;}
+
+.toolbar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+.search-wrap{flex:1;min-width:180px;position:relative;}
+.search-ico{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--ink4);pointer-events:none;}
+.search-box{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:9px 12px 9px 32px;font-family:inherit;font-size:.84rem;color:var(--ink);outline:none;box-shadow:var(--shadow);transition:border-color .2s;}
+.search-box:focus{border-color:var(--red);}
+.search-box::placeholder{color:var(--ink4);}
+.sort-sel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:9px 11px;font-family:inherit;font-size:.76rem;color:var(--ink);outline:none;cursor:pointer;box-shadow:var(--shadow);}
+
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.chip{padding:5px 12px;border-radius:99px;font-size:.7rem;font-weight:700;cursor:pointer;border:2px solid transparent;background:var(--surface);color:var(--ink2);box-shadow:var(--shadow);transition:all .15s;}
+.chip:hover{transform:translateY(-1px);box-shadow:var(--shadow2);}
+.chip.on{color:#fff!important;box-shadow:var(--shadow2);}
+
+.cat-section{margin-bottom:28px;}
+.cat-head{display:flex;align-items:center;gap:9px;margin-bottom:11px;padding-bottom:7px;border-bottom:1px solid var(--border);}
+.cat-stripe{width:4px;height:18px;border-radius:2px;flex-shrink:0;}
+.cat-name{font-family:'Noto Serif TC',serif;font-size:.85rem;font-weight:700;letter-spacing:.05em;}
+.cat-count{margin-left:auto;font-size:.65rem;color:var(--ink4);background:var(--bg2);border:1px solid var(--border);padding:2px 8px;border-radius:99px;}
+
+/* Product card */
+.product-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);margin-bottom:11px;overflow:hidden;transition:box-shadow .2s;}
+.product-card:hover{box-shadow:var(--shadow2);}
+.pc-head{padding:13px 15px 0;}
+.pc-name{font-size:.92rem;font-weight:700;line-height:1.3;}
+.pc-spec{font-size:.7rem;color:var(--ink3);margin-top:2px;}
+.pc-body{padding:10px 15px 0;}
+
+/* Price table */
+.price-table{width:100%;border-collapse:collapse;font-size:.76rem;}
+.price-table th{font-size:.62rem;font-weight:700;color:var(--ink4);text-transform:uppercase;letter-spacing:.05em;padding:5px 8px;border-bottom:1px solid var(--border);background:var(--bg2);}
+.price-table th:first-child{text-align:left;}
+.price-table th:not(:first-child){text-align:right;}
+.price-table td{padding:8px 8px;border-bottom:1px solid var(--bg2);vertical-align:middle;}
+.price-table tr:last-child td{border-bottom:none;}
+.price-table tr.best-row td{background:var(--green-bg);}
+.store-col{display:flex;align-items:center;gap:5px;}
+.store-name{font-weight:600;color:var(--ink2);font-size:.78rem;}
+.store-ctry{font-size:.62rem;color:var(--ink4);}
+.pv{text-align:right;white-space:nowrap;}
+.pm{font-family:'Noto Serif TC',serif;font-size:.86rem;font-weight:700;}
+.pm.tw{color:var(--ink);}
+.pm.jp{color:var(--blue);}
+.pm.best{color:var(--green);}
+.ps{font-size:.62rem;color:var(--ink3);margin-top:1px;}
+.pdash{color:var(--ink4);}
+.best-tag{display:inline-block;background:var(--green);color:#fff;font-size:.56rem;font-weight:900;padding:2px 6px;border-radius:99px;margin-left:4px;vertical-align:middle;}
+.saving-bar{display:flex;align-items:center;justify-content:flex-end;padding:6px 8px 3px;font-size:.68rem;color:var(--green);font-weight:700;}
+
+.pc-actions{display:flex;gap:5px;padding:8px 15px 12px;}
+.pc-btn{flex:1;padding:6px 4px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--ink3);font-family:inherit;font-size:.66rem;font-weight:700;cursor:pointer;transition:all .15s;text-align:center;}
+.pc-btn:hover{border-color:var(--ink3);color:var(--ink);background:var(--bg2);}
+.pc-btn.co{color:var(--green);border-color:rgba(26,106,58,.3);background:var(--green-bg);}
+.pc-btn.dl:hover{border-color:var(--red);color:var(--red);}
+
+/* Cart */
+.cart-sum{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:15px 17px;margin-bottom:16px;box-shadow:var(--shadow);display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:12px;}
+.cs-label{font-size:.62rem;color:var(--ink3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px;}
+.cs-val{font-family:'Noto Serif TC',serif;font-size:1rem;font-weight:700;}
+.cs-val.g{color:var(--green);}
+.cgl{font-size:.7rem;font-weight:900;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin:12px 0 7px;}
+.cart-row{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:10px 12px;box-shadow:var(--shadow);margin-bottom:7px;transition:opacity .2s;}
+.cart-row.done{opacity:.4;}
+.chk{width:21px;height:21px;border-radius:6px;border:2px solid var(--border2);background:var(--bg2);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem;transition:all .15s;}
+.chk.on{background:var(--green);border-color:var(--green);color:#fff;}
+.cr-name{font-size:.84rem;font-weight:700;flex:1;min-width:0;}
+.cr-sub{font-size:.65rem;color:var(--ink3);margin-top:2px;}
+.cr-price{text-align:right;flex-shrink:0;}
+.cr-main{font-family:'Noto Serif TC',serif;font-size:.88rem;font-weight:700;color:var(--green);}
+.cr-save{font-size:.62rem;color:var(--ink4);}
+
+/* Modal */
+.overlay{position:fixed;inset:0;background:rgba(28,20,16,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:500;display:flex;align-items:flex-end;justify-content:center;padding:0;opacity:0;pointer-events:none;transition:opacity .25s;}
+.overlay.on{opacity:1;pointer-events:all;}
+@media(min-width:600px){.overlay{align-items:center;padding:20px;}}
+.modal{background:var(--bg);border-radius:18px 18px 0 0;width:100%;max-width:620px;max-height:93dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:0 -4px 40px rgba(0,0,0,.2);transform:translateY(20px);transition:transform .28s cubic-bezier(.34,1.56,.64,1);}
+.overlay.on .modal{transform:translateY(0);}
+@media(min-width:600px){.modal{border-radius:18px;max-height:90dvh;}}
+.modal-drag{width:34px;height:4px;background:var(--border);border-radius:2px;margin:10px auto 0;}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:14px 19px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:5;}
+.modal-title{font-family:'Noto Serif TC',serif;font-size:.95rem;font-weight:700;}
+.modal-x{width:28px;height:28px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--ink3);cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.modal-x:hover{border-color:var(--red);color:var(--red);}
+.modal-body{padding:16px 19px 28px;}
+
+.fg{display:flex;flex-direction:column;gap:4px;margin-bottom:11px;}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.fl{font-size:.65rem;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;}
+.fi,.fs{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:9px 11px;font-family:inherit;font-size:.84rem;color:var(--ink);outline:none;width:100%;transition:border-color .2s;}
+.fi:focus,.fs:focus{border-color:var(--red);}
+.fh{font-size:.62rem;color:var(--ink4);margin-top:3px;line-height:1.4;}
+.fsec{font-size:.7rem;font-weight:900;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin:16px 0 10px;display:flex;align-items:center;gap:7px;}
+.fsec::after{content:'';flex:1;height:1px;background:var(--border);}
+
+.price-entries{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;}
+.price-entry{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:12px 12px 10px;position:relative;}
+.pe3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.pe-del{position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--ink4);cursor:pointer;font-size:.75rem;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.pe-del:hover{border-color:var(--red);color:var(--red);}
+
+.gs-step{display:flex;gap:10px;font-size:.78rem;line-height:1.6;margin-bottom:12px;}
+.gs-num{width:20px;height:20px;background:var(--red);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:900;flex-shrink:0;margin-top:2px;}
+.gs-step code{background:var(--bg2);border:1px solid var(--border);padding:1px 5px;border-radius:4px;font-size:.7rem;font-family:'Courier New',monospace;color:var(--blue);word-break:break-all;}
+
+.empty{text-align:center;padding:60px 20px;color:var(--ink4);}
+.empty-ico{font-size:3rem;margin-bottom:12px;opacity:.5;}
+.empty p{font-size:.85rem;line-height:1.6;}
+
+.toast{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(70px);background:var(--ink);color:#fff;border-radius:10px;padding:10px 18px;font-size:.76rem;font-weight:700;z-index:999;opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+.toast.ok{background:var(--green);}
+.toast.err{background:var(--red);}
+.toast.warn{background:var(--gold);}
+.hidden{display:none!important;}
+
+@media(max-width:520px){
+  .hd-top{padding:10px 13px;}
+  .wrap{padding:14px 11px 90px;}
+  .fg2{grid-template-columns:1fr;}
+  .pe3{grid-template-columns:1fr 1fr;}
+  .cart-sum{grid-template-columns:1fr 1fr;}
+  .price-table th:nth-child(2),.price-table td:nth-child(2){display:none;}
 }
-.card-thumb img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  transition: transform .3s;
-}
-.card:hover .card-thumb img { transform: scale(1.04); }
-
-.cart-pill {
-  position: absolute;
-  top: 9px; right: 9px;
-  background: var(--green);
-  color: #fff;
-  font-size: .62rem;
-  font-weight: 900;
-  padding: 3px 9px;
-  border-radius: 99px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.2);
-  letter-spacing: .03em;
-}
-
-.card-body {
-  padding: 13px 14px 14px;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-
-.card-name {
-  font-size: .9rem;
-  font-weight: 700;
-  line-height: 1.35;
-  margin-bottom: 2px;
-}
-
-.card-note {
-  font-size: .68rem;
-  color: var(--ink-light);
-  margin-bottom: 10px;
-  line-height: 1.4;
-}
-
-/* Price rows */
-.price-list { display: flex; flex-direction: column; gap: 5px; }
-
-.price-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 7px 10px;
-  border-radius: var(--radius-sm);
-  background: var(--paper2);
-  border: 1px solid var(--paper3);
-  gap: 8px;
-}
-.price-row.best {
-  background: var(--green-bg);
-  border-color: rgba(26,106,58,.25);
-}
-
-.price-row-l {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: .74rem;
-  color: var(--ink-mid);
-  flex-wrap: wrap;
-  flex: 1;
-  min-width: 0;
-}
-
-.price-row-r { text-align: right; flex-shrink: 0; }
-
-.price-local {
-  font-size: .86rem;
-  font-weight: 700;
-  color: var(--ink);
-  font-family: 'Shippori Mincho', serif;
-  white-space: nowrap;
-}
-.price-row.best .price-local { color: var(--green); }
-
-.price-twd {
-  font-size: .66rem;
-  color: var(--ink-light);
-  margin-top: 1px;
-  white-space: nowrap;
-}
-
-.best-tag {
-  font-size: .6rem;
-  background: var(--green);
-  color: #fff;
-  padding: 1px 7px;
-  border-radius: 99px;
-  font-weight: 900;
-  letter-spacing: .03em;
-  white-space: nowrap;
-}
-
-.free-tag {
-  font-size: .6rem;
-  background: var(--gold-bg);
-  color: var(--gold);
-  border: 1px solid rgba(154,112,0,.25);
-  padding: 1px 6px;
-  border-radius: 99px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.tax-note-inline {
-  font-size: .6rem;
-  color: var(--ink-light);
-}
-
-/* Saving row */
-.saving-row {
-  text-align: center;
-  font-size: .72rem;
-  font-weight: 700;
-  color: var(--green);
-  padding: 5px 0 2px;
-}
-
-/* Threshold warning */
-.threshold-warn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: .68rem;
-  color: #7a5000;
-  background: var(--gold-bg);
-  border: 1px solid rgba(154,112,0,.22);
-  border-radius: 6px;
-  padding: 5px 9px;
-  margin-top: 6px;
-  line-height: 1.45;
-}
-
-/* Card actions */
-.card-actions {
-  display: flex;
-  gap: 5px;
-  margin-top: 11px;
-}
-
-.card-btn {
-  flex: 1;
-  padding: 7px 5px;
-  border-radius: 7px;
-  border: 1px solid var(--paper3);
-  background: transparent;
-  color: var(--ink-light);
-  font-family: inherit;
-  font-size: .68rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all .15s;
-  text-align: center;
-}
-.card-btn:hover { border-color: var(--ink-faint); color: var(--ink); background: var(--paper2); }
-.card-btn.cart-on { color: var(--green); border-color: rgba(26,106,58,.3); background: var(--green-bg); }
-.card-btn.cart-on:hover { background: #d4eddf; }
-.card-btn.del:hover { border-color: var(--red); color: var(--red); }
-
-/* ════════════════════════════════
-   EMPTY STATE
-════════════════════════════════ */
-.empty {
-  text-align: center;
-  padding: 70px 20px;
-  color: var(--ink-light);
-}
-.empty-ico { font-size: 3.5rem; margin-bottom: 14px; opacity: .6; }
-.empty p { font-size: .88rem; line-height: 1.6; }
-
-/* ════════════════════════════════
-   CART PAGE
-════════════════════════════════ */
-.cart-summary {
-  background: #fff;
-  border: 1px solid var(--paper3);
-  border-radius: var(--radius);
-  padding: 16px 18px;
-  margin-bottom: 18px;
-  box-shadow: var(--sh-sm);
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 14px;
-}
-
-.sum-item {}
-.sum-label { font-size: .65rem; color: var(--ink-light); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
-.sum-val { font-family: 'Shippori Mincho', serif; font-size: 1.05rem; font-weight: 700; }
-.sum-val.green { color: var(--green); }
-
-.cart-group-label {
-  font-size: .72rem;
-  font-weight: 900;
-  color: var(--ink-light);
-  text-transform: uppercase;
-  letter-spacing: .08em;
-  margin: 14px 0 8px;
-}
-
-.cart-row {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  background: #fff;
-  border: 1px solid var(--paper3);
-  border-radius: var(--radius-sm);
-  padding: 11px 13px;
-  box-shadow: var(--sh-sm);
-  margin-bottom: 8px;
-  transition: opacity .2s;
-}
-.cart-row.done { opacity: .45; }
-
-.check-box {
-  width: 22px; height: 22px;
-  border-radius: 6px;
-  border: 2px solid var(--ink-faint);
-  background: var(--paper2);
-  flex-shrink: 0;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: .85rem;
-  transition: all .15s;
-}
-.check-box.on { background: var(--green); border-color: var(--green); color: #fff; }
-
-.cart-row-name { font-size: .85rem; font-weight: 700; }
-.cart-row-sub { font-size: .68rem; color: var(--ink-light); margin-top: 2px; }
-
-.cart-row-price { margin-left: auto; text-align: right; }
-.crp-main { font-family: 'Shippori Mincho', serif; font-size: .9rem; font-weight: 700; color: var(--green); }
-.crp-save { font-size: .65rem; color: var(--ink-light); }
-
-/* ════════════════════════════════
-   MODAL
-════════════════════════════════ */
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(26,10,0,.55);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  z-index: 500;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding: 0;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .25s;
-}
-.overlay.open { opacity: 1; pointer-events: all; }
-
-@media (min-width: 600px) {
-  .overlay { align-items: center; padding: 20px; }
-}
-
-.modal {
-  background: var(--paper);
-  border-radius: 20px 20px 0 0;
-  width: 100%;
-  max-width: 580px;
-  max-height: 92dvh;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  box-shadow: var(--sh-lg);
-  transform: translateY(30px);
-  transition: transform .28s cubic-bezier(.34,1.56,.64,1);
-}
-.overlay.open .modal { transform: translateY(0); }
-
-@media (min-width: 600px) {
-  .modal { border-radius: 20px; max-height: 90dvh; }
-}
-
-.modal-drag {
-  width: 36px; height: 4px;
-  background: var(--paper3);
-  border-radius: 2px;
-  margin: 10px auto 0;
-}
-
-.modal-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--paper3);
-  position: sticky;
-  top: 0;
-  background: var(--paper);
-  z-index: 5;
-}
-.modal-title { font-family: 'Shippori Mincho', serif; font-size: 1rem; font-weight: 800; }
-
-.modal-x {
-  width: 30px; height: 30px;
-  border-radius: 8px;
-  border: 1px solid var(--paper3);
-  background: transparent;
-  color: var(--ink-light);
-  cursor: pointer;
-  font-size: .9rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all .15s;
-}
-.modal-x:hover { border-color: var(--red); color: var(--red); }
-
-.modal-body { padding: 18px 20px 30px; }
-
-/* Form */
-.fg { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
-.fg-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-.fl {
-  font-size: .68rem;
-  font-weight: 700;
-  color: var(--ink-light);
-  text-transform: uppercase;
-  letter-spacing: .08em;
-}
-
-.fi, .fs {
-  background: #fff;
-  border: 1px solid var(--paper3);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  font-family: inherit;
-  font-size: .86rem;
-  color: var(--ink);
-  outline: none;
-  transition: border-color .2s, box-shadow .2s;
-  width: 100%;
-}
-.fi:focus, .fs:focus {
-  border-color: var(--red);
-  box-shadow: 0 0 0 3px rgba(192,57,43,.07);
-}
-
-.fh { font-size: .65rem; color: var(--ink-light); margin-top: 3px; line-height: 1.4; }
-
-.fsec {
-  font-size: .72rem;
-  font-weight: 900;
-  color: var(--ink-light);
-  text-transform: uppercase;
-  letter-spacing: .08em;
-  margin: 18px 0 12px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.fsec::after { content:''; flex:1; height:1px; background:var(--paper3); }
-
-/* Image upload */
-.img-zone {
-  border: 2px dashed var(--paper3);
-  border-radius: var(--radius-sm);
-  padding: 18px;
-  text-align: center;
-  cursor: pointer;
-  transition: all .2s;
-  background: var(--paper2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 80px;
-}
-.img-zone:hover { border-color: var(--red); background: var(--red-light); }
-.img-zone input { display: none; }
-.img-zone img { max-height: 100px; border-radius: 6px; object-fit: cover; }
-
-/* ════════════════════════════════
-   TOAST
-════════════════════════════════ */
-.toast {
-  position: fixed;
-  bottom: calc(20px + env(safe-area-inset-bottom));
-  left: 50%;
-  transform: translateX(-50%) translateY(80px);
-  background: var(--ink);
-  color: #fff;
-  border-radius: 12px;
-  padding: 11px 20px;
-  font-size: .78rem;
-  font-weight: 700;
-  z-index: 999;
-  opacity: 0;
-  transition: all .3s cubic-bezier(.34,1.56,.64,1);
-  white-space: nowrap;
-  pointer-events: none;
-  max-width: 90vw;
-  text-align: center;
-}
-.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-.toast.ok { background: var(--green); }
-.toast.err { background: var(--red); }
-.toast.warn { background: var(--gold); }
-
-/* ════════════════════════════════
-   GS MODAL STEPS
-════════════════════════════════ */
-.gs-step {
-  display: flex;
-  gap: 12px;
-  font-size: .8rem;
-  line-height: 1.6;
-  margin-bottom: 14px;
-}
-.gs-num {
-  width: 22px; height: 22px;
-  background: var(--red);
-  color: #fff;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: .65rem;
-  font-weight: 900;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-.gs-step code {
-  background: var(--paper2);
-  border: 1px solid var(--paper3);
-  padding: 1px 5px;
-  border-radius: 4px;
-  font-size: .72rem;
-  font-family: 'Courier New', monospace;
-  color: var(--blue);
-  word-break: break-all;
-}
-
-/* ════════════════════════════════
-   PWA INSTALL BANNER
-════════════════════════════════ */
-.install-banner {
-  position: fixed;
-  bottom: calc(16px + env(safe-area-inset-bottom));
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--ink);
-  color: #fff;
-  border-radius: 14px;
-  padding: 14px 18px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  box-shadow: var(--sh-lg);
-  z-index: 200;
-  max-width: 380px;
-  width: calc(100% - 32px);
-  animation: slideUp .4s cubic-bezier(.34,1.56,.64,1);
-}
-.install-banner.hidden { display: none; }
-
-@keyframes slideUp {
-  from { transform: translateX(-50%) translateY(100px); opacity: 0; }
-  to   { transform: translateX(-50%) translateY(0); opacity: 1; }
-}
-
-.ib-text { flex: 1; }
-.ib-title { font-size: .82rem; font-weight: 700; }
-.ib-sub { font-size: .68rem; color: rgba(255,255,255,.6); margin-top: 2px; }
-
-/* ════════════════════════════════
-   RESPONSIVE
-════════════════════════════════ */
-@media (max-width: 520px) {
-  .header-main { padding: 12px 14px; }
-  .rate-bar { padding: 8px 14px; }
-  .container { padding: 16px 12px 100px; }
-  .grid { grid-template-columns: 1fr; }
-  .fg-row { grid-template-columns: 1fr; }
-  .cart-summary { grid-template-columns: 1fr 1fr; }
-}
-
-.hidden { display: none !important; }
 </style>
 </head>
 <body>
 
-<!-- ════ HEADER ════ -->
 <header>
-  <div class="header-main">
+  <div class="hd-top">
     <div class="logo">
-      <div class="logo-mark">🛍️</div>
-      <div class="logo-text">
-        <h1>台日比價神器 Pro</h1>
-        <p>TAIWAN × JAPAN PRICE COMPARISON</p>
+      <div class="logo-bear">🐻</div>
+      <div>
+        <h1>藥妝比價神器</h1>
+        <p>台灣 × 日本 即時比價</p>
       </div>
     </div>
-    <div class="header-btns">
-      <button class="btn btn-ghost btn-sm" onclick="openGsModal()">📊 Sheets</button>
-      <button class="btn btn-ghost btn-sm" onclick="triggerImport()">📂 匯入</button>
-      <input type="file" id="importFile" accept=".csv" style="display:none" onchange="handleImport(event)">
-      <button class="btn btn-ghost btn-sm" onclick="exportCSV()">📥 匯出</button>
-      <button class="btn btn-primary" onclick="openAddModal()">＋ 新增</button>
+    <div class="hd-btns">
+      <button class="btn btn-ghost btn-sm" onclick="openGS()">📊 Sheets設定</button>
+      <button class="btn btn-ghost btn-sm" onclick="syncNow()" id="syncBtn">🔄 同步</button>
+      <button class="btn btn-red btn-sm" onclick="openAdd()">＋ 新增商品</button>
     </div>
   </div>
 
-  <!-- Currency rates -->
   <div class="rate-bar">
-    <div class="rate-item">
-      <span class="rate-label">🇯🇵 JPY→TWD</span>
-      <input class="rate-input" id="rJPY" type="number" value="0.218" step="0.001" min="0.001" oninput="renderAll()">
-    </div>
-    <div class="rate-item">
-      <span class="rate-label">🇭🇰 HKD→TWD</span>
-      <input class="rate-input" id="rHKD" type="number" value="4.10" step="0.01" min="0.01" oninput="renderAll()">
-    </div>
-    <div class="rate-item">
-      <span class="rate-label">🇰🇷 KRW→TWD</span>
-      <input class="rate-input" id="rKRW" type="number" value="0.023" step="0.001" min="0.001" oninput="renderAll()">
-    </div>
-    <div class="rate-item">
-      <span class="rate-label">🇺🇸 USD→TWD</span>
-      <input class="rate-input" id="rUSD" type="number" value="32.5" step="0.1" min="0.1" oninput="renderAll()">
-    </div>
-    <div class="rate-item">
-      <span class="rate-label">🇸🇬 SGD→TWD</span>
-      <input class="rate-input" id="rSGD" type="number" value="24.2" step="0.1" min="0.1" oninput="renderAll()">
-    </div>
-    <div class="rate-item">
-      <span class="rate-label">🇨🇳 CNY→TWD</span>
-      <input class="rate-input" id="rCNY" type="number" value="4.45" step="0.01" min="0.01" oninput="renderAll()">
-    </div>
+    <span>💱 匯率：1 JPY =</span>
+    <input class="rate-input" id="rJPY" type="number" value="0.218" step="0.001" min="0.001" oninput="renderAll()">
+    <span>TWD　（修改後即時更新）</span>
   </div>
 
-  <!-- Tabs -->
   <div class="tabs">
-    <button class="tab-btn active" id="tab-browse-btn" onclick="switchTab('browse',this)">🔍 瀏覽比價</button>
-    <button class="tab-btn" id="tab-cart-btn" onclick="switchTab('cart',this)">
-      🛒 購物清單<span class="tab-badge hidden" id="cartBadge">0</span>
-    </button>
-    <button class="tab-btn" id="tab-guide-btn" onclick="switchTab('guide',this)">📖 使用說明</button>
+    <button class="tab on" onclick="switchTab('browse',this)">🔍 瀏覽比價</button>
+    <button class="tab" onclick="switchTab('cart',this)">🛒 購物清單<span class="tab-n hidden" id="cartBadge">0</span></button>
+    <button class="tab" onclick="switchTab('guide',this)">📖 使用說明</button>
   </div>
 </header>
 
-<!-- ════ BROWSE PAGE ════ -->
-<div id="page-browse" class="page active">
-  <div class="container">
+<!-- BROWSE -->
+<div id="page-browse" class="page on">
+  <div class="wrap">
     <div class="toolbar">
       <div class="search-wrap">
         <span class="search-ico">🔍</span>
-        <input class="search-box" id="searchInput" type="search" placeholder="搜尋商品、商店、備註…" oninput="renderAll()">
+        <input class="search-box" id="searchBox" type="search" placeholder="搜尋商品名稱、規格、商店…" oninput="renderAll()">
       </div>
-      <select class="sort-select" id="sortSel" onchange="renderAll()">
-        <option value="stroke">筆劃排序</option>
-        <option value="save_d">省最多↓</option>
-        <option value="save_a">省最少↑</option>
-        <option value="alpha">名稱A→Z</option>
+      <select class="sort-sel" id="sortSel" onchange="renderAll()">
+        <option value="name">名稱排序（筆劃）</option>
+        <option value="cheap">最便宜優先</option>
+        <option value="saving">省最多優先</option>
       </select>
     </div>
-
-    <div class="chips" id="catChips"></div>
-
-    <div id="taxBanner" class="banner banner-tax hidden">
-      <span class="banner-ico">⚠️</span>
-      <span id="taxBannerTxt"></span>
-    </div>
-
+    <div class="chips" id="chips"></div>
     <div id="sections"></div>
   </div>
 </div>
 
-<!-- ════ CART PAGE ════ -->
+<!-- CART -->
 <div id="page-cart" class="page">
-  <div class="container">
-    <div id="cartContent"></div>
-  </div>
+  <div class="wrap"><div id="cartContent"></div></div>
 </div>
 
-<!-- ════ GUIDE PAGE ════ -->
+<!-- GUIDE -->
 <div id="page-guide" class="page">
-  <div class="container" style="max-width:720px">
-    <div style="background:#fff;border:1px solid var(--paper3);border-radius:var(--radius);padding:24px 28px;box-shadow:var(--sh-sm);line-height:1.75;font-size:.88rem;color:var(--ink-mid)">
-      <h2 style="font-family:'Shippori Mincho',serif;font-size:1.2rem;font-weight:800;margin-bottom:18px;color:var(--ink)">📖 台日比價神器 使用說明</h2>
+  <div class="wrap" style="max-width:700px">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:22px 24px;box-shadow:var(--shadow);line-height:1.75;font-size:.84rem;color:var(--ink2)">
+      <h2 style="font-family:'Noto Serif TC',serif;font-size:1.1rem;margin-bottom:16px">📖 使用說明</h2>
 
-      <h3 style="font-size:.88rem;font-weight:700;color:var(--red);margin:18px 0 8px">🏠 安裝成 App（PWA）</h3>
-      <p><strong>iPhone / iPad：</strong>Safari 打開此頁 → 點下方「分享」按鈕 → 選「加入主畫面」→ 點「新增」，桌面就會出現 App 圖示。</p>
-      <p style="margin-top:6px"><strong>Android：</strong>Chrome 打開此頁 → 點右上角三點選單 → 選「新增到主畫面」或「安裝應用程式」。</p>
-      <p style="margin-top:6px"><strong>電腦（Chrome/Edge）：</strong>網址列右側會出現安裝圖示，點擊即可。</p>
+      <h3 style="font-size:.84rem;color:var(--red);margin:14px 0 6px">➕ 新增商品</h3>
+      <p>點「＋ 新增商品」→ 填名稱、規格、分類 → 點「新增一個商店的價格」可加入多筆 → 同一商品可填台灣多家店 + 日本多家店，程式自動排序最便宜。</p>
 
-      <h3 style="font-size:.88rem;font-weight:700;color:var(--red);margin:18px 0 8px">➕ 新增商品</h3>
-      <p>點右上角「＋ 新增」→ 填入商品名稱、分類、各國售價與稅率 → 儲存。程式自動計算哪邊最便宜、換算成台幣。</p>
-
-      <h3 style="font-size:.88rem;font-weight:700;color:var(--red);margin:18px 0 8px">🇯🇵 日本稅率說明</h3>
-      <ul style="margin-left:16px;margin-top:4px">
-        <li>一般商品（電器、日用品、服飾）：<strong>10%</strong></li>
-        <li>食品飲料（外帶）：<strong>8%</strong></li>
-        <li>外國旅客免稅購物：<strong>0%</strong>（需滿 ¥5,000 同類商品，同日、同店）</li>
+      <h3 style="font-size:.84rem;color:var(--red);margin:14px 0 6px">🇯🇵 日本價格欄位</h3>
+      <ul style="margin-left:15px;margin-top:4px;line-height:1.8">
+        <li><strong>未稅價</strong>：商品標示的原始定價</li>
+        <li><strong>含稅價</strong>：實際付款金額（一般商品+10%，食品+8%）</li>
+        <li>比價時用含稅價換算台幣，方便直接比較</li>
       </ul>
-      <p style="margin-top:6px">程式會自動提醒哪些商品接近但未達免稅門檻。</p>
 
-      <h3 style="font-size:.88rem;font-weight:700;color:var(--red);margin:18px 0 8px">🛒 購物清單</h3>
-      <p>在商品卡片按「加入清單」，切換到「購物清單」分頁，商品會自動依照「台灣購買」/ 「日本購買」分組，外出時逐一勾選已買到的商品。</p>
+      <h3 style="font-size:.84rem;color:var(--red);margin:14px 0 6px">📊 Google Sheets 同步</h3>
+      <p>你的 Sheets 已有 <code style="background:var(--bg2);padding:1px 5px;border-radius:3px;font-size:.76rem">categories</code>、<code style="background:var(--bg2);padding:1px 5px;border-radius:3px;font-size:.76rem">stores</code>、<code style="background:var(--bg2);padding:1px 5px;border-radius:3px;font-size:.76rem">products</code> 三個工作表，程式直接讀取，不需要改格式！設定 Apps Script 後按「🔄 同步」即可。</p>
 
-      <h3 style="font-size:.88rem;font-weight:700;color:var(--red);margin:18px 0 8px">📊 Google Sheets 同步</h3>
-      <p>點上方「Sheets」按鈕，依照步驟設定，即可讓電腦與手機的資料完全同步。詳細設定請參考 <code style="background:var(--paper2);padding:1px 5px;border-radius:4px;font-size:.8rem">google-apps-script.gs</code> 檔案。</p>
+      <h3 style="font-size:.84rem;color:var(--red);margin:14px 0 6px">💱 匯率調整</h3>
+      <p>頁面頂端直接修改匯率數字，所有日圓換算即時更新。出發前記得核對當天匯率。</p>
 
-      <h3 style="font-size:.88rem;font-weight:700;color:var(--red);margin:18px 0 8px">📂 匯入 / 匯出 CSV</h3>
-      <p>「匯出」會下載含完整比價結果的 CSV，可用 Excel 開啟編輯。編輯完後「匯入」即可更新資料，適合在電腦批次輸入大量商品。</p>
+      <h3 style="font-size:.84rem;color:var(--red);margin:14px 0 6px">🛒 購物清單</h3>
+      <p>點商品卡的「加入清單」，外出時切換到「購物清單」逐一勾選已買商品，並顯示台灣、日本各自預計花費。</p>
 
-      <h3 style="font-size:.88rem;font-weight:700;color:var(--red);margin:18px 0 8px">💱 匯率設定</h3>
-      <p>頁面頂端的匯率列可手動調整，修改後所有商品的換算價格即時更新，出發前請記得核對當日匯率。</p>
-
-      <div style="margin-top:24px;padding:14px;background:var(--paper2);border-radius:var(--radius-sm);font-size:.75rem;color:var(--ink-light);text-align:center">
-        版本 2.0 · PWA 支援 · 資料儲存於本機瀏覽器（LocalStorage）
+      <div style="margin-top:20px;padding:12px;background:var(--bg2);border-radius:var(--r2);font-size:.68rem;color:var(--ink4);text-align:center">
+        藥妝比價神器 v3.0 · PWA 支援 · 資料儲存於本機
       </div>
     </div>
   </div>
 </div>
 
-<!-- ════ ADD/EDIT MODAL ════ -->
+<!-- ADD/EDIT MODAL -->
 <div class="overlay" id="addOverlay">
   <div class="modal">
     <div class="modal-drag"></div>
     <div class="modal-head">
       <div class="modal-title" id="modalTitle">＋ 新增商品</div>
-      <button class="modal-x" onclick="closeAddModal()">✕</button>
+      <button class="modal-x" onclick="closeAdd()">✕</button>
     </div>
     <div class="modal-body">
-
-      <div class="fg">
-        <label class="fl">商品名稱 *</label>
-        <input class="fi" id="fName" placeholder="例：化妝水 敏感肌用 200ml" maxlength="80">
+      <div class="fg2">
+        <div class="fg" style="margin-bottom:0">
+          <label class="fl">商品名稱 *</label>
+          <input class="fi" id="fName" placeholder="例：肌研 極潤化妝水">
+        </div>
+        <div class="fg" style="margin-bottom:0">
+          <label class="fl">規格</label>
+          <input class="fi" id="fSpec" placeholder="例：170ml">
+        </div>
+      </div>
+      <div class="fg" style="margin-top:11px">
+        <label class="fl">分類</label>
+        <select class="fs" id="fCat" style="margin-top:0"></select>
       </div>
 
-      <div class="fg-row">
-        <div class="fg">
-          <label class="fl">分類 *</label>
-          <select class="fs" id="fCat">
-            <option value="食品">🍱 食品</option>
-            <option value="藥妝">💄 藥妝</option>
-            <option value="保健食品">💊 保健食品</option>
-            <option value="日用品">🧴 日用品</option>
-            <option value="服飾">👗 服飾</option>
-            <option value="電器">📱 電器</option>
-            <option value="伴手禮">🎁 伴手禮</option>
-            <option value="其他">📦 其他</option>
-          </select>
-        </div>
-        <div class="fg">
-          <label class="fl">商品照片</label>
-          <div class="img-zone" onclick="document.getElementById('fImg').click()" id="imgZone">
-            <input type="file" id="fImg" accept="image/*" onchange="previewImg(event)">
-            <div id="imgPrev"><span style="font-size:1.8rem">📷</span><br><span style="font-size:.65rem;color:var(--ink-light)">點擊上傳</span></div>
-          </div>
-        </div>
-      </div>
+      <div class="fsec">💰 各地區 / 商店價格</div>
+      <div class="fh" style="margin-bottom:10px">同一商品可新增多筆，分別記錄不同商店的價格，程式自動比較排序</div>
 
-      <div class="fsec">🇹🇼 台灣</div>
-      <div class="fg-row">
-        <div class="fg">
-          <label class="fl">商店名稱</label>
-          <input class="fi" id="fTwS" placeholder="例：無印良品">
-        </div>
-        <div class="fg">
-          <label class="fl">售價（TWD）</label>
-          <input class="fi" type="number" id="fTwP" placeholder="0" min="0">
-        </div>
-      </div>
-      <div class="fg">
-        <label class="fl">台灣稅率（%）</label>
-        <input class="fi" type="number" id="fTwT" value="5" min="0" max="100">
-        <div class="fh">台灣一般商品含5%營業稅。售價若已含稅請填 0。</div>
-      </div>
+      <div class="price-entries" id="priceEntries"></div>
+      <button class="btn btn-ghost btn-sm" onclick="addEntry()" style="width:100%;justify-content:center;margin-bottom:4px">
+        ＋ 新增一筆商店價格
+      </button>
 
-      <div class="fsec">🇯🇵 日本</div>
-      <div class="fg-row">
-        <div class="fg">
-          <label class="fl">商店名稱</label>
-          <input class="fi" id="fJpS" placeholder="例：マツキヨ">
-        </div>
-        <div class="fg">
-          <label class="fl">定價（JPY）</label>
-          <input class="fi" type="number" id="fJpP" placeholder="0" min="0">
-        </div>
-      </div>
-      <div class="fg-row">
-        <div class="fg">
-          <label class="fl">消費稅（%）</label>
-          <input class="fi" type="number" id="fJpT" value="10" min="0" max="100">
-          <div class="fh">一般10% · 食品8% · 免稅0%</div>
-        </div>
-        <div class="fg">
-          <label class="fl">外國人免稅？</label>
-          <select class="fs" id="fJpDF">
-            <option value="0">否（一般含稅）</option>
-            <option value="1">是（免稅購買）</option>
-          </select>
-          <div class="fh">滿¥5,000可申請</div>
-        </div>
-      </div>
-
-      <div class="fsec">🌏 其他國家（選填）</div>
-      <div class="fg-row">
-        <div class="fg">
-          <label class="fl">幣別</label>
-          <select class="fs" id="fOC">
-            <option value="">不填</option>
-            <option value="HKD">🇭🇰 港幣 HKD</option>
-            <option value="KRW">🇰🇷 韓圜 KRW</option>
-            <option value="USD">🇺🇸 美元 USD</option>
-            <option value="SGD">🇸🇬 新幣 SGD</option>
-            <option value="CNY">🇨🇳 人民幣 CNY</option>
-          </select>
-        </div>
-        <div class="fg">
-          <label class="fl">售價</label>
-          <input class="fi" type="number" id="fOP" placeholder="0" min="0">
-        </div>
-      </div>
-      <div class="fg-row">
-        <div class="fg">
-          <label class="fl">商店名稱</label>
-          <input class="fi" id="fOS" placeholder="商店名稱">
-        </div>
-        <div class="fg">
-          <label class="fl">當地稅率（%）</label>
-          <input class="fi" type="number" id="fOT" value="0" min="0" max="100">
-        </div>
-      </div>
-
-      <div class="fg" style="margin-top:4px">
+      <div class="fg" style="margin-top:14px">
         <label class="fl">備註</label>
-        <input class="fi" id="fNote" placeholder="例：日本限定、退稅注意、季節限定…" maxlength="100">
+        <input class="fi" id="fNote" placeholder="例：日本限定、退稅注意事項…">
       </div>
 
-      <div style="display:flex;gap:8px;margin-top:20px">
-        <button class="btn btn-ghost" style="flex:1" onclick="closeAddModal()">取消</button>
-        <button class="btn btn-primary" style="flex:2" onclick="saveProduct()">💾 儲存商品</button>
+      <div style="display:flex;gap:7px;margin-top:18px">
+        <button class="btn btn-ghost" style="flex:1" onclick="closeAdd()">取消</button>
+        <button class="btn btn-red" style="flex:2" onclick="saveProd()">💾 儲存商品</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ════ GOOGLE SHEETS MODAL ════ -->
+<!-- GS MODAL -->
 <div class="overlay" id="gsOverlay">
   <div class="modal">
     <div class="modal-drag"></div>
     <div class="modal-head">
-      <div class="modal-title">📊 Google Sheets 同步</div>
-      <button class="modal-x" onclick="closeGsModal()">✕</button>
+      <div class="modal-title">📊 Google Sheets 同步設定</div>
+      <button class="modal-x" onclick="closeGS()">✕</button>
     </div>
     <div class="modal-body">
-      <div class="gs-step">
-        <div class="gs-num">1</div>
-        <div>開啟 Google Sheets，確認第一列有標題（或點下方「複製範本」）。<br>
-        <code>名稱,分類,台灣商店,台灣價格,台灣稅率,日本商店,日本價格,日本稅率,免稅,其他幣別,其他價格,其他商店,其他稅率,備註</code></div>
+      <div style="background:var(--gold-bg);border:1px solid rgba(154,120,48,.25);border-radius:var(--r);padding:12px 14px;font-size:.76rem;color:#6a4a00;line-height:1.6;margin-bottom:16px">
+        ⚡ 你的 Sheets 格式（categories / stores / products）可直接使用，不需要改欄位！
       </div>
-      <div class="gs-step">
-        <div class="gs-num">2</div>
-        <div>點「檔案 → 共用 → 發布到網路」<br>格式選 <code>逗號分隔值 (.csv)</code>，點發布，複製連結。</div>
-      </div>
-      <div class="gs-step">
-        <div class="gs-num">3</div>
-        <div>貼到下方，點「載入」即可同步資料。</div>
-      </div>
+
+      <div class="gs-step"><div class="gs-num">1</div><div>開啟你的 Google Sheets → 點「<strong>擴充功能</strong>」→「<strong>Apps Script</strong>」</div></div>
+      <div class="gs-step"><div class="gs-num">2</div><div>刪掉全部內容，貼上新的 <code>google-apps-script.gs</code>（本次更新版）→ 儲存（Ctrl+S）</div></div>
+      <div class="gs-step"><div class="gs-num">3</div><div>點「<strong>部署 → 新增部署作業</strong>」→ 類型選「網頁應用程式」<br>執行身分：你自己　存取權：<strong>所有人</strong> → 部署 → 複製網址</div></div>
+      <div class="gs-step"><div class="gs-num">4</div><div>貼到下方 → 點「儲存並同步」</div></div>
+
       <div class="fg">
-        <label class="fl">Google Sheets CSV 公開連結</label>
-        <input class="fi" id="gsUrl" placeholder="https://docs.google.com/spreadsheets/d/…/pub?output=csv">
+        <label class="fl">Apps Script 網頁應用程式網址</label>
+        <input class="fi" id="gsUrl" placeholder="https://script.google.com/macros/s/…/exec">
+        <div class="fh">儲存後下次直接點「🔄 同步」即可</div>
       </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn btn-primary" onclick="loadGS()">🔄 載入 / 同步</button>
-        <button class="btn btn-gold" onclick="copyTemplate()">📋 複製欄位範本</button>
-        <button class="btn btn-ghost" onclick="closeGsModal()">關閉</button>
+
+      <div style="display:flex;gap:7px;flex-wrap:wrap">
+        <button class="btn btn-red" onclick="saveAndSync()">💾 儲存並同步</button>
+        <button class="btn btn-ghost" onclick="closeGS()">關閉</button>
       </div>
-      <div id="gsStatus" style="font-size:.72rem;color:var(--ink-light);margin-top:10px;line-height:1.5"></div>
+      <div id="gsStatus" style="font-size:.72rem;color:var(--ink3);margin-top:10px;line-height:1.5"></div>
     </div>
   </div>
-</div>
-
-<!-- ════ PWA INSTALL BANNER ════ -->
-<div class="install-banner hidden" id="installBanner">
-  <div style="font-size:1.4rem">📲</div>
-  <div class="ib-text">
-    <div class="ib-title">安裝為手機 App</div>
-    <div class="ib-sub">加入主畫面，離線也能使用</div>
-  </div>
-  <button class="btn btn-primary btn-sm" id="installBtn">安裝</button>
-  <button class="btn btn-ghost btn-xs" onclick="dismissInstall()">✕</button>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<!-- ════════════════════════════════
-     JAVASCRIPT
-════════════════════════════════ -->
 <script>
 'use strict';
 
-// ─── CONSTANTS ───────────────────────────────
-const CATS = {
-  '食品':    { color:'#b83020', emoji:'🍱' },
-  '藥妝':    { color:'#7a3080', emoji:'💄' },
-  '保健食品': { color:'#1a6a3a', emoji:'💊' },
-  '日用品':   { color:'#1a4a8a', emoji:'🧴' },
-  '服飾':    { color:'#a05030', emoji:'👗' },
-  '電器':    { color:'#1a6060', emoji:'📱' },
-  '伴手禮':  { color:'#9a7000', emoji:'🎁' },
-  '其他':    { color:'#5a5050', emoji:'📦' },
+// ── DEFAULT CATEGORIES ──────────────────
+const DEF_CATS = {
+  drugstore:  { name:'藥妝類',  color:'#8e44ad' },
+  food:       { name:'食品類',  color:'#c0392b' },
+  Vitm:       { name:'保健食品',color:'#1a6a3a' },
+  groceries:  { name:'生活雜貨',color:'#1a4a8a' },
 };
 
-const CUR = {
-  TWD:{ sym:'NT$', flag:'🇹🇼', rk:null     },
-  JPY:{ sym:'¥',   flag:'🇯🇵', rk:'rJPY'   },
-  HKD:{ sym:'HK$', flag:'🇭🇰', rk:'rHKD'   },
-  KRW:{ sym:'₩',   flag:'🇰🇷', rk:'rKRW'   },
-  USD:{ sym:'$',   flag:'🇺🇸', rk:'rUSD'   },
-  SGD:{ sym:'S$',  flag:'🇸🇬', rk:'rSGD'   },
-  CNY:{ sym:'¥',   flag:'🇨🇳', rk:'rCNY'   },
-};
+// ── STATE ───────────────────────────────
+let products   = [];
+let categories = JSON.parse(JSON.stringify(DEF_CATS));
+let cart       = [];
+let editId     = null;
+let activeCat  = 'all';
+let gsUrl      = '';
+let entryCount = 0;
 
-const JP_THRESHOLD = 5000;
-
-// ─── STATE ───────────────────────────────────
-let products = [];
-let cart     = []; // [{idx, checked}]
-let editIdx  = null;
-let activeCat = 'all';
-let deferredPrompt = null;
-
-// ─── INIT ────────────────────────────────────
-(function init() {
-  try { products = JSON.parse(localStorage.getItem('pp_v2') || '[]'); } catch(e){ products = []; }
-  try { cart     = JSON.parse(localStorage.getItem('pp_cart') || '[]'); } catch(e){ cart = []; }
-
-  if (products.length === 0) loadDemo();
-
+// ── INIT ────────────────────────────────
+(function(){
+  try{ products   = JSON.parse(localStorage.getItem('pp_v3')||'[]'); }catch(e){}
+  try{ categories = JSON.parse(localStorage.getItem('pp_cats')||JSON.stringify(DEF_CATS)); }catch(e){}
+  try{ cart       = JSON.parse(localStorage.getItem('pp_cart')||'[]'); }catch(e){}
+  gsUrl = localStorage.getItem('pp_gs')||'';
+  if(gsUrl) document.getElementById('gsUrl').value=gsUrl;
+  if(!products.length) loadDemo();
+  buildCatSelect();
   renderAll();
-  registerSW();
-  setupPWAPrompt();
 })();
 
-function save() {
-  localStorage.setItem('pp_v2', JSON.stringify(products));
-  localStorage.setItem('pp_cart', JSON.stringify(cart));
+function save(){
+  localStorage.setItem('pp_v3',    JSON.stringify(products));
+  localStorage.setItem('pp_cats',  JSON.stringify(categories));
+  localStorage.setItem('pp_cart',  JSON.stringify(cart));
 }
 
-// ─── SERVICE WORKER ──────────────────────────
-function registerSW() {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js')
-      .then(() => console.log('[SW] registered'))
-      .catch(e => console.warn('[SW] failed', e));
+// ── CALC ────────────────────────────────
+function rate(){ return parseFloat(document.getElementById('rJPY').value)||0.218; }
+
+function toTWD(pr){
+  if(pr.country==='TW' && pr.price_twd>0) return pr.price_twd;
+  if(pr.country==='JP'){
+    const j = pr.price_jpy_tax||pr.price_jpy_untax||0;
+    if(j>0) return j*rate();
   }
+  return null;
 }
 
-// ─── PWA INSTALL ─────────────────────────────
-function setupPWAPrompt() {
-  window.addEventListener('beforeinstallprompt', e => {
-    e.preventDefault();
-    deferredPrompt = e;
-    const banner = document.getElementById('installBanner');
-    if (!localStorage.getItem('pwa_dismissed')) {
-      banner.classList.remove('hidden');
-    }
-    document.getElementById('installBtn').onclick = async () => {
-      banner.classList.add('hidden');
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') showToast('已安裝到主畫面 ✓', 'ok');
-      deferredPrompt = null;
-    };
-  });
+function fT(v){ return (v==null||isNaN(v)) ? '—' : 'NT$'+Math.round(v).toLocaleString(); }
+function fJ(v){ return v>0 ? '¥'+Math.round(v).toLocaleString() : '—'; }
 
-  window.addEventListener('appinstalled', () => {
-    document.getElementById('installBanner').classList.add('hidden');
-    showToast('App 已安裝成功 🎉', 'ok');
-  });
+function sorted(p){
+  return p.prices.map(pr=>({...pr,twd:toTWD(pr)})).filter(pr=>pr.twd!==null).sort((a,b)=>a.twd-b.twd);
+}
+function cheapest(p){ const s=sorted(p); return s.length?s[0]:null; }
+function saving(p){ const s=sorted(p); return s.length>1?s[s.length-1].twd-s[0].twd:0; }
+
+// ── TABS ────────────────────────────────
+function switchTab(tab,el){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.getElementById('page-'+tab).classList.add('on');
+  if(tab==='cart') renderCart();
 }
 
-function dismissInstall() {
-  document.getElementById('installBanner').classList.add('hidden');
-  localStorage.setItem('pwa_dismissed', '1');
+// ── CART ────────────────────────────────
+function inCart(id){ return cart.some(c=>c.id===id); }
+
+function toggleCart(id){
+  if(inCart(id)){ cart=cart.filter(c=>c.id!==id); toast('已從清單移除','warn'); }
+  else{ cart.push({id,checked:false}); toast('已加入購物清單 🛒','ok'); }
+  save(); badge(); renderAll();
 }
 
-// ─── CALC HELPERS ────────────────────────────
-function getRate(id) {
-  return parseFloat(document.getElementById(id)?.value) || 1;
+function badge(){
+  const b=document.getElementById('cartBadge');
+  if(cart.length){ b.textContent=cart.length; b.classList.remove('hidden'); }
+  else b.classList.add('hidden');
 }
 
-function toTWD(amount, currency, tax = 0) {
-  if (!amount || amount <= 0) return null;
-  const gross = amount * (1 + tax / 100);
-  if (currency === 'TWD') return gross;
-  const cfg = CUR[currency];
-  if (!cfg || !cfg.rk) return null;
-  return gross * getRate(cfg.rk);
+function toggleCheck(id){
+  const c=cart.find(c=>c.id===id); if(c){c.checked=!c.checked;save();renderCart();}
 }
 
-function fTWD(v) {
-  if (v === null || v === undefined || isNaN(v)) return '—';
-  return 'NT$' + Math.round(v).toLocaleString();
-}
-
-function fLocal(amount, currency) {
-  const c = CUR[currency];
-  if (!c) return String(amount);
-  if (currency === 'KRW') return c.sym + Math.round(amount).toLocaleString();
-  return c.sym + Math.round(amount * 10) / 10;
-}
-
-// Build all price options for a product
-function buildPrices(p) {
-  const list = [];
-  if (p.twPrice > 0) {
-    list.push({
-      key:'tw', label:'台灣', flag:'🇹🇼', currency:'TWD',
-      store: p.twStore, tax: p.twTax,
-      local: fLocal(p.twPrice, 'TWD'),
-      twd: toTWD(p.twPrice, 'TWD', p.twTax),
-      canFree: false,
-      nearThresh: false,
-    });
-  }
-  if (p.jpPrice > 0) {
-    const eff = p.jpDutyFree == 1 ? 0 : (p.jpTax || 10);
-    list.push({
-      key:'jp', label:'日本', flag:'🇯🇵', currency:'JPY',
-      store: p.jpStore, tax: eff,
-      local: fLocal(p.jpPrice, 'JPY'),
-      twd: toTWD(p.jpPrice, 'JPY', eff),
-      canFree: p.jpDutyFree == 1,
-      nearThresh: !p.jpDutyFree && p.jpPrice > 0 && p.jpPrice < JP_THRESHOLD,
-    });
-  }
-  if (p.otherCurrency && p.otherPrice > 0) {
-    const cc = CUR[p.otherCurrency] || {};
-    list.push({
-      key:'other', label: p.otherCurrency, flag: cc.flag || '🌏', currency: p.otherCurrency,
-      store: p.otherStore, tax: p.otherTax || 0,
-      local: fLocal(p.otherPrice, p.otherCurrency),
-      twd: toTWD(p.otherPrice, p.otherCurrency, p.otherTax),
-      canFree: false, nearThresh: false,
-    });
-  }
-  return list;
-}
-
-function getWinner(p) {
-  const ps = buildPrices(p).filter(x => x.twd !== null);
-  if (ps.length < 2) return null;
-  return ps.reduce((a, b) => a.twd <= b.twd ? a : b);
-}
-
-function getSaving(p) {
-  const ps = buildPrices(p).filter(x => x.twd !== null);
-  if (ps.length < 2) return 0;
-  const vals = ps.map(x => x.twd);
-  return Math.max(...vals) - Math.min(...vals);
-}
-
-function strokeSort(a, b) {
-  return a.name.localeCompare(b.name, 'zh-TW', { sensitivity: 'base' });
-}
-
-// ─── TABS ────────────────────────────────────
-function switchTab(tab, el) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + tab).classList.add('active');
-  if (tab === 'cart') renderCart();
-}
-
-// ─── CART ────────────────────────────────────
-function inCart(idx) { return cart.some(c => c.idx === idx); }
-
-function toggleCart(idx) {
-  if (inCart(idx)) {
-    cart = cart.filter(c => c.idx !== idx);
-    showToast('已從清單移除', 'warn');
-  } else {
-    cart.push({ idx, checked: false });
-    showToast('已加入購物清單 🛒', 'ok');
-  }
-  save();
-  updateBadge();
-  renderAll();
-}
-
-function updateBadge() {
-  const b = document.getElementById('cartBadge');
-  if (cart.length > 0) { b.textContent = cart.length; b.classList.remove('hidden'); }
-  else { b.classList.add('hidden'); }
-}
-
-function toggleCheck(idx) {
-  const item = cart.find(c => c.idx === idx);
-  if (item) { item.checked = !item.checked; save(); renderCart(); }
-}
-
-function renderCart() {
-  const el = document.getElementById('cartContent');
-  if (cart.length === 0) {
-    el.innerHTML = `<div class="empty"><div class="empty-ico">🛒</div><p>購物清單是空的<br>在比價頁點「加入清單」開始！</p></div>`;
+function renderCart(){
+  const el=document.getElementById('cartContent');
+  if(!cart.length){
+    el.innerHTML=`<div class="empty"><div class="empty-ico">🛒</div><p>購物清單是空的<br>在比價頁加入商品！</p></div>`;
     return;
   }
-
-  // Totals
-  let totalJP = 0, totalTW = 0, savings = 0;
-  cart.forEach(c => {
-    const p = products[c.idx];
-    if (!p) return;
-    const w = getWinner(p);
-    if (w) {
-      if (w.key === 'jp') totalJP += w.twd;
-      else totalTW += w.twd;
-    }
-    savings += getSaving(p);
+  let tTW=0,tJP=0,sv=0;
+  cart.forEach(c=>{
+    const p=products.find(x=>x.id===c.id); if(!p) return;
+    const w=cheapest(p); if(w){ w.country==='JP'?tJP+=w.twd:tTW+=w.twd; }
+    sv+=saving(p);
   });
-
-  const done = cart.filter(c => c.checked).length;
-
-  let html = `<div class="cart-summary">
-    <div class="sum-item"><div class="sum-label">清單商品</div><div class="sum-val">${cart.length} 件（已買 ${done}）</div></div>
-    <div class="sum-item"><div class="sum-label">🇹🇼 台灣花費</div><div class="sum-val">${totalTW > 0 ? fTWD(totalTW) : '—'}</div></div>
-    <div class="sum-item"><div class="sum-label">🇯🇵 日本花費</div><div class="sum-val">${totalJP > 0 ? fTWD(totalJP) : '—'}</div></div>
-    <div class="sum-item"><div class="sum-label">💰 共省下</div><div class="sum-val green">${fTWD(savings)}</div></div>
-    <div class="sum-item" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-      <button class="btn btn-ghost btn-sm" onclick="clearDone()">清除已買</button>
-      <button class="btn btn-ghost btn-sm" onclick="clearCart()">清空</button>
+  const done=cart.filter(c=>c.checked).length;
+  let html=`<div class="cart-sum">
+    <div><div class="cs-label">清單</div><div class="cs-val">${cart.length}件（已買${done}）</div></div>
+    <div><div class="cs-label">🇹🇼 台灣花費</div><div class="cs-val">${tTW>0?fT(tTW):'—'}</div></div>
+    <div><div class="cs-label">🇯🇵 日本花費</div><div class="cs-val">${tJP>0?fT(tJP):'—'}</div></div>
+    <div><div class="cs-label">💰 共省下</div><div class="cs-val g">${fT(sv)}</div></div>
+    <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">
+      <button class="btn btn-ghost btn-xs" onclick="clearDone()">清除已買</button>
+      <button class="btn btn-ghost btn-xs" onclick="clearCart()">清空</button>
     </div>
   </div>`;
-
-  const jpItems = cart.filter(c => { const p = products[c.idx]; return p && getWinner(p)?.key === 'jp'; });
-  const twItems = cart.filter(c => { const p = products[c.idx]; return p && getWinner(p)?.key !== 'jp'; });
-  const noWin   = cart.filter(c => { const p = products[c.idx]; return p && !getWinner(p); });
-
-  if (jpItems.length) {
-    html += `<div class="cart-group-label">🇯🇵 日本購買</div>` + jpItems.map(c => cartRowHtml(c)).join('');
-  }
-  if (twItems.length) {
-    html += `<div class="cart-group-label">🇹🇼 台灣購買</div>` + twItems.map(c => cartRowHtml(c)).join('');
-  }
-  if (noWin.length) {
-    html += `<div class="cart-group-label">📦 其他</div>` + noWin.map(c => cartRowHtml(c)).join('');
-  }
-
-  el.innerHTML = html;
+  const jpI=cart.filter(c=>{const p=products.find(x=>x.id===c.id);return p&&cheapest(p)?.country==='JP';});
+  const twI=cart.filter(c=>{const p=products.find(x=>x.id===c.id);return p&&cheapest(p)?.country!=='JP';});
+  if(jpI.length) html+=`<div class="cgl">🇯🇵 日本購買</div>`+jpI.map(cRowHtml).join('');
+  if(twI.length) html+=`<div class="cgl">🇹🇼 台灣購買</div>`+twI.map(cRowHtml).join('');
+  el.innerHTML=html;
 }
 
-function cartRowHtml(c) {
-  const p = products[c.idx];
-  if (!p) return '';
-  const cat = CATS[p.category] || CATS['其他'];
-  const w = getWinner(p);
-  const sv = getSaving(p);
-  return `<div class="cart-row ${c.checked ? 'done' : ''}" style="border-left:4px solid ${cat.color}">
-    <div class="check-box ${c.checked ? 'on' : ''}" onclick="toggleCheck(${c.idx})">${c.checked ? '✓' : ''}</div>
+function cRowHtml(c){
+  const p=products.find(x=>x.id===c.id); if(!p) return '';
+  const cat=categories[p.category_id]||{name:'其他',color:'#888'};
+  const w=cheapest(p); const sv=saving(p);
+  return `<div class="cart-row ${c.checked?'done':''}" style="border-left:4px solid ${cat.color}">
+    <div class="chk ${c.checked?'on':''}" onclick="toggleCheck('${p.id}')">${c.checked?'✓':''}</div>
     <div style="flex:1;min-width:0">
-      <div class="cart-row-name" style="${c.checked ? 'text-decoration:line-through' : ''}">${cat.emoji} ${p.name}</div>
-      <div class="cart-row-sub">${w ? `${w.flag} ${w.store || w.label}` : ''}${p.notes ? ' · ' + p.notes : ''}</div>
+      <div class="cr-name" style="${c.checked?'text-decoration:line-through':''}">${p.name}${p.spec?' '+p.spec:''}</div>
+      <div class="cr-sub">${w?(w.country==='JP'?'🇯🇵':'🇹🇼')+' '+w.store_name:''}</div>
     </div>
-    <div class="cart-row-price">
-      <div class="crp-main">${w ? fTWD(w.twd) : '—'}</div>
-      ${sv > 0 ? `<div class="crp-save">省 ${fTWD(sv)}</div>` : ''}
+    <div class="cr-price">
+      <div class="cr-main">${w?fT(w.twd):'—'}</div>
+      ${sv>0?`<div class="cr-save">省${fT(sv)}</div>`:''}
     </div>
-    <button class="btn btn-ghost btn-xs" onclick="toggleCart(${c.idx})">移除</button>
+    <button class="btn btn-ghost btn-xs" onclick="toggleCart('${p.id}')">移除</button>
   </div>`;
 }
 
-function clearDone() {
-  cart = cart.filter(c => !c.checked);
-  save(); updateBadge(); renderCart(); renderAll();
-  showToast('已清除已買商品 ✓', 'ok');
+function clearDone(){ cart=cart.filter(c=>!c.checked); save();badge();renderCart();renderAll(); toast('已清除','ok'); }
+function clearCart(){ if(!confirm('確定清空？'))return; cart=[]; save();badge();renderCart();renderAll(); }
+
+// ── BROWSE ──────────────────────────────
+function renderAll(){ renderChips(); renderSections(); badge(); }
+
+function renderChips(){
+  const used=[...new Set(products.map(p=>p.category_id))];
+  const el=document.getElementById('chips');
+  let h=`<div class="chip ${activeCat==='all'?'on':''}" style="${activeCat==='all'?'background:var(--ink);':''}" onclick="setCat('all')">全部 (${products.length})</div>`;
+  Object.entries(categories).forEach(([id,cfg])=>{
+    if(!used.includes(id)) return;
+    const n=products.filter(p=>p.category_id===id).length;
+    const on=activeCat===id;
+    h+=`<div class="chip ${on?'on':''}" style="${on?`background:${cfg.color};`:`color:${cfg.color};`}" onclick="setCat('${id}')">${cfg.name} (${n})</div>`;
+  });
+  el.innerHTML=h;
 }
 
-function clearCart() {
-  if (!confirm('確定清空購物清單？')) return;
-  cart = []; save(); updateBadge(); renderCart(); renderAll();
-}
+function setCat(c){ activeCat=c; renderAll(); }
 
-// ─── BROWSE RENDER ───────────────────────────
-function renderAll() {
-  renderChips();
-  renderSections();
-  renderTaxBanner();
-  updateBadge();
-}
+function renderSections(){
+  const el=document.getElementById('sections');
+  const q=document.getElementById('searchBox').value.toLowerCase();
+  const sort=document.getElementById('sortSel').value;
 
-function renderChips() {
-  const used = [...new Set(products.map(p => p.category))];
-  const el = document.getElementById('catChips');
-  let html = `<div class="chip ${activeCat==='all'?'active':''}"
-    style="${activeCat==='all'?'background:var(--ink);':''}"
-    onclick="setCat('all')">全部 (${products.length})</div>`;
-
-  Object.entries(CATS).forEach(([cat, cfg]) => {
-    if (!used.includes(cat)) return;
-    const n = products.filter(p => p.category === cat).length;
-    const on = activeCat === cat;
-    html += `<div class="chip ${on?'active':''}"
-      style="${on ? `background:${cfg.color};` : `color:${cfg.color};`}"
-      onclick="setCat('${cat}')">${cfg.emoji} ${cat} (${n})</div>`;
+  let f=products.filter(p=>{
+    const inCat=activeCat==='all'||p.category_id===activeCat;
+    const inQ=!q||p.name.toLowerCase().includes(q)||(p.spec||'').toLowerCase().includes(q)||(p.note||'').toLowerCase().includes(q)||p.prices.some(pr=>(pr.store_name||'').toLowerCase().includes(q));
+    return inCat&&inQ;
   });
 
-  el.innerHTML = html;
+  if(!f.length){ el.innerHTML=`<div class="empty"><div class="empty-ico">🛍️</div><p>沒有符合的商品<br>點「＋ 新增商品」加入！</p></div>`; return; }
+
+  f.sort((a,b)=>{
+    if(sort==='name') return a.name.localeCompare(b.name,'zh-TW',{sensitivity:'base'});
+    if(sort==='cheap'){ const wa=cheapest(a),wb=cheapest(b); return (wa?.twd||99999)-(wb?.twd||99999); }
+    if(sort==='saving') return saving(b)-saving(a);
+    return 0;
+  });
+
+  const groups={};
+  f.forEach(p=>{ (groups[p.category_id]=groups[p.category_id]||[]).push(p); });
+
+  let html='';
+  // Known cats in order
+  Object.keys(categories).forEach(cid=>{
+    if(!groups[cid]) return;
+    const cfg=categories[cid];
+    html+=`<div class="cat-section">
+      <div class="cat-head">
+        <div class="cat-stripe" style="background:${cfg.color}"></div>
+        <div class="cat-name" style="color:${cfg.color}">${cfg.name}</div>
+        <div class="cat-count">${groups[cid].length} 件</div>
+      </div>
+      ${groups[cid].map(cardHtml).join('')}
+    </div>`;
+  });
+  // Unknown cats
+  Object.keys(groups).filter(id=>!categories[id]).forEach(cid=>{
+    html+=`<div class="cat-section">
+      <div class="cat-head"><div class="cat-stripe" style="background:#888"></div><div class="cat-name" style="color:#888">${cid}</div><div class="cat-count">${groups[cid].length} 件</div></div>
+      ${groups[cid].map(cardHtml).join('')}
+    </div>`;
+  });
+  el.innerHTML=html;
 }
 
-function setCat(cat) { activeCat = cat; renderAll(); }
-
-function renderTaxBanner() {
-  const q = document.getElementById('searchInput').value.toLowerCase();
-  const banner = document.getElementById('taxBanner');
-  const txt = document.getElementById('taxBannerTxt');
-
-  const jpTotal = products
-    .filter(p => {
-      const inCat = activeCat === 'all' || p.category === activeCat;
-      const inQ = !q || p.name.toLowerCase().includes(q);
-      return inCat && inQ && p.jpPrice > 0 && !p.jpDutyFree;
-    })
-    .reduce((s, p) => s + p.jpPrice, 0);
-
-  if (jpTotal > 0 && jpTotal < JP_THRESHOLD) {
-    const gap = JP_THRESHOLD - jpTotal;
-    banner.classList.remove('hidden');
-    txt.innerHTML = `<strong>免稅提醒：</strong>目前篩選的日本商品合計 ¥${Math.round(jpTotal).toLocaleString()}，距免稅門檻 ¥5,000 還差 <strong>¥${Math.round(gap).toLocaleString()}</strong>。同日同店滿額可省10%消費稅。`;
-  } else if (jpTotal >= JP_THRESHOLD) {
-    banner.classList.remove('hidden');
-    txt.innerHTML = `<strong>✅ 達到免稅門檻：</strong>日本商品合計 ¥${Math.round(jpTotal).toLocaleString()}，可向店家申請免稅（外國旅客，需出示護照）。`;
+function cardHtml(p){
+  const ps=sorted(p); const sv=saving(p); const oc=inCart(p.id);
+  let rows='';
+  if(!ps.length){
+    rows=`<tr><td colspan="4" style="padding:8px;color:var(--ink4);font-size:.74rem">尚未輸入任何價格</td></tr>`;
   } else {
-    banner.classList.add('hidden');
+    ps.forEach((pr,i)=>{
+      const best=i===0&&ps.length>1;
+      const flag=pr.country==='JP'?'🇯🇵':'🇹🇼';
+      const ctry=pr.country==='JP'?'日本':'台灣';
+
+      let c2,c3,c4;
+      if(pr.country==='TW'){
+        c2=`<td class="pv"><span class="pdash">—</span></td>`;
+        c3=`<td class="pv"><span class="pm tw">NT$${Math.round(pr.price_twd).toLocaleString()}</span></td>`;
+        c4=`<td class="pv"><span class="pm ${best?'best':'tw'}">${fT(pr.twd)}${best?'<span class="best-tag">最便宜</span>':''}</span></td>`;
+      } else {
+        c2=`<td class="pv"><span class="pm jp">${fJ(pr.price_jpy_untax)}</span></td>`;
+        c3=`<td class="pv"><span class="pm jp">${fJ(pr.price_jpy_tax)}</span></td>`;
+        c4=`<td class="pv"><span class="pm ${best?'best':''}">≈ ${fT(pr.twd)}${best?'<span class="best-tag">最便宜</span>':''}</span>${pr.price_jpy_tax>0?`<div class="ps">含稅換算</div>`:''}</td>`;
+      }
+
+      rows+=`<tr class="${best?'best-row':''}">
+        <td><div class="store-col">${flag}<div><div class="store-name">${pr.store_name||'未知商店'}</div><div class="store-ctry">${ctry}</div></div></div></td>
+        ${c2}${c3}${c4}
+      </tr>`;
+    });
   }
+
+  return `<div class="product-card">
+    <div class="pc-head">
+      <div class="pc-name">${p.name}</div>
+      ${p.spec?`<div class="pc-spec">${p.spec}</div>`:''}
+      ${p.note?`<div class="pc-spec" style="color:var(--gold)">📝 ${p.note}</div>`:''}
+    </div>
+    <div class="pc-body">
+      <table class="price-table">
+        <thead><tr>
+          <th>商店</th><th>未稅價</th><th>含稅 / 台灣售價</th><th>換算台幣</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      ${sv>0?`<div class="saving-bar">💰 選最便宜比最貴省下 ${fT(sv)}</div>`:''}
+    </div>
+    <div class="pc-actions">
+      <button class="pc-btn ${oc?'co':''}" onclick="toggleCart('${p.id}')">${oc?'✓ 已加入清單':'🛒 加入清單'}</button>
+      <button class="pc-btn" onclick="openEdit('${p.id}')">✏️ 編輯</button>
+      <button class="pc-btn dl" onclick="delProd('${p.id}')">🗑 刪除</button>
+    </div>
+  </div>`;
 }
 
-function renderSections() {
-  const el = document.getElementById('sections');
-  const q  = document.getElementById('searchInput').value.toLowerCase();
-  const sort = document.getElementById('sortSel').value;
+// ── ADD/EDIT ─────────────────────────────
+function buildCatSelect(){
+  const sel=document.getElementById('fCat');
+  sel.innerHTML=Object.entries(categories).map(([id,cfg])=>`<option value="${id}">${cfg.name}</option>`).join('');
+}
 
-  let filtered = products.filter((p, i) => {
-    const inCat = activeCat === 'all' || p.category === activeCat;
-    const inQ   = !q ||
-      p.name.toLowerCase().includes(q) ||
-      (p.twStore  || '').toLowerCase().includes(q) ||
-      (p.jpStore  || '').toLowerCase().includes(q) ||
-      (p.otherStore||'').toLowerCase().includes(q) ||
-      (p.notes    || '').toLowerCase().includes(q);
-    return inCat && inQ;
-  });
+function openAdd(){
+  editId=null;
+  document.getElementById('modalTitle').textContent='＋ 新增商品';
+  document.getElementById('fName').value='';
+  document.getElementById('fSpec').value='';
+  document.getElementById('fNote').value='';
+  document.getElementById('fCat').value='drugstore';
+  document.getElementById('priceEntries').innerHTML='';
+  entryCount=0;
+  addEntry();
+  document.getElementById('addOverlay').classList.add('on');
+}
 
-  if (filtered.length === 0) {
-    el.innerHTML = `<div class="empty"><div class="empty-ico">🛍️</div><p>沒有符合的商品<br>點右上角「＋ 新增」加入第一筆！</p></div>`;
-    return;
-  }
+function openEdit(id){
+  editId=id;
+  const p=products.find(x=>x.id===id); if(!p) return;
+  document.getElementById('modalTitle').textContent='✏️ 編輯商品';
+  document.getElementById('fName').value=p.name||'';
+  document.getElementById('fSpec').value=p.spec||'';
+  document.getElementById('fNote').value=p.note||'';
+  document.getElementById('fCat').value=p.category_id||'drugstore';
+  document.getElementById('priceEntries').innerHTML='';
+  entryCount=0;
+  p.prices.forEach(pr=>addEntry(pr));
+  if(!p.prices.length) addEntry();
+  document.getElementById('addOverlay').classList.add('on');
+}
 
-  const groups = {};
-  filtered.forEach(p => { (groups[p.category] = groups[p.category] || []).push(p); });
+function closeAdd(){ document.getElementById('addOverlay').classList.remove('on'); }
 
-  Object.values(groups).forEach(arr => arr.sort((a, b) => {
-    if (sort === 'stroke')  return strokeSort(a, b);
-    if (sort === 'save_d') return getSaving(b) - getSaving(a);
-    if (sort === 'save_a') return getSaving(a) - getSaving(b);
-    return a.name.localeCompare(b.name);
+function addEntry(data={}){
+  entryCount++;
+  const n=entryCount;
+  const knownStores=[
+    {id:'watsons',name:'屈臣氏',country:'TW'},{id:'cosmed',name:'康是美',country:'TW'},
+    {id:'poya',name:'寶雅',country:'TW'},{id:'muji',name:'無印良品',country:'TW'},
+    {id:'donki',name:'唐吉訶德',country:'JP'},{id:'matsu',name:'松本清',country:'JP'},
+    {id:'sundrug',name:'SUNDRUG',country:'JP'},{id:'muji_jp',name:'無印良品(JP)',country:'JP'},
+  ];
+  // Add stores from existing products
+  const seen=new Set(knownStores.map(s=>s.id));
+  products.forEach(p=>p.prices.forEach(pr=>{
+    if(pr.store_id&&!seen.has(pr.store_id)){ knownStores.push({id:pr.store_id,name:pr.store_name,country:pr.country}); seen.add(pr.store_id); }
   }));
 
-  let html = '';
-  Object.keys(CATS).forEach(cat => {
-    if (!groups[cat]) return;
-    const cfg = CATS[cat];
-    html += `<div class="cat-section">
-      <div class="cat-head">
-        <div class="cat-bar" style="background:${cfg.color}"></div>
-        <div class="cat-name" style="color:${cfg.color}">${cfg.emoji} ${cat}</div>
-        <div class="cat-num">${groups[cat].length} 件</div>
+  const opts=knownStores.map(s=>{
+    const sel=data.store_id===s.id?'selected':'';
+    return `<option value="${s.id}|${s.name}|${s.country}" ${sel}>${s.country==='JP'?'🇯🇵':'🇹🇼'} ${s.name}</option>`;
+  }).join('');
+
+  const isJP = data.country==='JP';
+  const div=document.createElement('div');
+  div.className='price-entry';
+  div.id=`pe${n}`;
+  div.innerHTML=`
+    <button class="pe-del" onclick="document.getElementById('pe${n}').remove()">✕</button>
+    <div class="fg2" style="margin-bottom:8px">
+      <div class="fg" style="margin-bottom:0">
+        <label class="fl">商店</label>
+        <select class="fs" id="ps${n}" onchange="onSC(${n})">
+          <option value="">選擇商店…</option>
+          ${opts}
+          <option value="__c__">手動輸入</option>
+        </select>
       </div>
-      <div class="grid">${groups[cat].map(p => cardHtml(p)).join('')}</div>
-    </div>`;
-  });
-
-  el.innerHTML = html;
-}
-
-function cardHtml(p) {
-  const idx = products.indexOf(p);
-  const cfg = CATS[p.category] || CATS['其他'];
-  const prices = buildPrices(p);
-  const winner = getWinner(p);
-  const saving = getSaving(p);
-  const onCart = inCart(idx);
-
-  let priceRows = '';
-  prices.forEach(pr => {
-    const isW = winner && pr.key === winner.key;
-    priceRows += `<div class="price-row ${isW ? 'best' : ''}">
-      <div class="price-row-l">
-        ${pr.flag} ${pr.store ? pr.store + ' · ' : ''}${pr.label}
-        ${pr.canFree ? '<span class="free-tag">免稅</span>' : ''}
-        ${isW ? '<span class="best-tag">最便宜</span>' : ''}
-        ${pr.tax > 0 ? `<span class="tax-note-inline">+${pr.tax}%稅</span>` : ''}
-      </div>
-      <div class="price-row-r">
-        <div class="price-local">${pr.local}</div>
-        ${pr.currency !== 'TWD' && pr.twd ? `<div class="price-twd">≈ ${fTWD(pr.twd)}</div>` : ''}
-      </div>
-    </div>`;
-  });
-
-  if (!priceRows) priceRows = `<div style="font-size:.72rem;color:var(--ink-light);padding:4px 0">尚未輸入價格</div>`;
-
-  const nearWarn = prices.some(pr => pr.nearThresh)
-    ? `<div class="threshold-warn">⚠️ 日本未達 ¥5,000 免稅門檻，搭配其他商品滿額可省消費稅</div>` : '';
-
-  const savRow = saving > 0
-    ? `<div class="saving-row">💰 選最便宜可省 ${fTWD(saving)}</div>` : '';
-
-  const thumb = p.img
-    ? `<div class="card-thumb"><img src="${p.img}" alt="${p.name}" loading="lazy">${onCart ? '<div class="cart-pill">✓ 清單中</div>' : ''}</div>`
-    : `<div class="card-thumb">${cfg.emoji}${onCart ? '<div class="cart-pill">✓ 清單中</div>' : ''}</div>`;
-
-  return `<div class="card ${onCart ? 'in-cart' : ''}">
-    <div class="card-accent" style="background:${cfg.color}"></div>
-    ${thumb}
-    <div class="card-body">
-      <div class="card-name">${p.name}</div>
-      ${p.notes ? `<div class="card-note">📝 ${p.notes}</div>` : ''}
-      <div class="price-list">${priceRows}</div>
-      ${nearWarn}
-      ${savRow}
-      <div class="card-actions">
-        <button class="card-btn ${onCart ? 'cart-on' : ''}" onclick="toggleCart(${idx})">${onCart ? '✓ 已加入清單' : '🛒 加入清單'}</button>
-        <button class="card-btn" onclick="openEdit(${idx})">✏️ 編輯</button>
-        <button class="card-btn del" onclick="delProduct(${idx})">🗑</button>
+      <div class="fg" id="pcw${n}" style="margin-bottom:0;display:none">
+        <label class="fl">自訂商店名稱</label>
+        <input class="fi" id="pc${n}" placeholder="商店名稱">
       </div>
     </div>
-  </div>`;
-}
+    <div class="fg" style="margin-bottom:8px">
+      <label class="fl">國家</label>
+      <select class="fs" id="pco${n}">
+        <option value="TW" ${!isJP?'selected':''}>🇹🇼 台灣</option>
+        <option value="JP" ${isJP?'selected':''}>🇯🇵 日本</option>
+      </select>
+    </div>
+    <div class="pe3">
+      <div class="fg" style="margin-bottom:0">
+        <label class="fl">台灣售價 (TWD)</label>
+        <input class="fi" type="number" id="ptw${n}" min="0" placeholder="0" value="${data.price_twd||''}">
+      </div>
+      <div class="fg" style="margin-bottom:0">
+        <label class="fl">日圓 未稅 (JPY)</label>
+        <input class="fi" type="number" id="pju${n}" min="0" placeholder="0" value="${data.price_jpy_untax||''}">
+      </div>
+      <div class="fg" style="margin-bottom:0">
+        <label class="fl">日圓 含稅 (JPY)</label>
+        <input class="fi" type="number" id="pjt${n}" min="0" placeholder="0" value="${data.price_jpy_tax||''}">
+      </div>
+    </div>`;
+  document.getElementById('priceEntries').appendChild(div);
 
-// ─── ADD / EDIT ──────────────────────────────
-function openAddModal() {
-  editIdx = null;
-  document.getElementById('modalTitle').textContent = '＋ 新增商品';
-  clearForm();
-  document.getElementById('addOverlay').classList.add('open');
-}
-
-function openEdit(idx) {
-  editIdx = idx;
-  const p = products[idx];
-  document.getElementById('modalTitle').textContent = '✏️ 編輯商品';
-  const set = (id, v) => { const el = document.getElementById(id); if(el) el.value = v ?? ''; };
-  set('fName', p.name);      set('fCat',  p.category);
-  set('fTwS',  p.twStore);   set('fTwP',  p.twPrice);   set('fTwT', p.twTax ?? 5);
-  set('fJpS',  p.jpStore);   set('fJpP',  p.jpPrice);   set('fJpT', p.jpTax ?? 10);
-  set('fJpDF', p.jpDutyFree ?? 0);
-  set('fOC',   p.otherCurrency); set('fOP', p.otherPrice); set('fOS', p.otherStore); set('fOT', p.otherTax ?? 0);
-  set('fNote', p.notes);
-  document.getElementById('imgPrev').innerHTML = p.img
-    ? `<img src="${p.img}" style="max-height:90px;border-radius:6px;max-width:100%">`
-    : `<span style="font-size:1.8rem">📷</span><br><span style="font-size:.65rem;color:var(--ink-light)">點擊上傳</span>`;
-  document.getElementById('addOverlay').classList.add('open');
-}
-
-function closeAddModal() { document.getElementById('addOverlay').classList.remove('open'); }
-
-function clearForm() {
-  ['fName','fTwS','fTwP','fJpS','fJpP','fOP','fOS','fNote'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-  document.getElementById('fCat').value = '食品';
-  document.getElementById('fTwT').value = '5';
-  document.getElementById('fJpT').value = '10';
-  document.getElementById('fJpDF').value = '0';
-  document.getElementById('fOC').value = '';
-  document.getElementById('fOT').value = '0';
-  document.getElementById('fImg').value = '';
-  document.getElementById('imgPrev').innerHTML = `<span style="font-size:1.8rem">📷</span><br><span style="font-size:.65rem;color:var(--ink-light)">點擊上傳</span>`;
-}
-
-function saveProduct() {
-  const name = document.getElementById('fName').value.trim();
-  if (!name) { showToast('請輸入商品名稱', 'err'); return; }
-
-  const imgFile = document.getElementById('fImg').files[0];
-  const existImg = editIdx !== null ? products[editIdx].img : null;
-
-  function commit(imgData) {
-    const p = {
-      name,
-      category:      document.getElementById('fCat').value,
-      twStore:       document.getElementById('fTwS').value.trim(),
-      twPrice:       parseFloat(document.getElementById('fTwP').value) || 0,
-      twTax:         parseFloat(document.getElementById('fTwT').value) || 0,
-      jpStore:       document.getElementById('fJpS').value.trim(),
-      jpPrice:       parseFloat(document.getElementById('fJpP').value) || 0,
-      jpTax:         parseFloat(document.getElementById('fJpT').value) || 10,
-      jpDutyFree:    parseInt(document.getElementById('fJpDF').value) || 0,
-      otherCurrency: document.getElementById('fOC').value,
-      otherPrice:    parseFloat(document.getElementById('fOP').value) || 0,
-      otherStore:    document.getElementById('fOS').value.trim(),
-      otherTax:      parseFloat(document.getElementById('fOT').value) || 0,
-      notes:         document.getElementById('fNote').value.trim(),
-      img:           imgData || existImg || null,
-    };
-    if (editIdx !== null) products[editIdx] = p;
-    else products.push(p);
-    save(); closeAddModal(); renderAll();
-    showToast(editIdx !== null ? '商品已更新 ✓' : '已新增商品 ✓', 'ok');
-  }
-
-  if (imgFile) {
-    const r = new FileReader();
-    r.onload = e => commit(e.target.result);
-    r.readAsDataURL(imgFile);
-  } else { commit(null); }
-}
-
-function delProduct(idx) {
-  if (!confirm(`確定刪除「${products[idx].name}」？`)) return;
-  // Fix cart indices
-  cart = cart
-    .filter(c => c.idx !== idx)
-    .map(c => ({ ...c, idx: c.idx > idx ? c.idx - 1 : c.idx }));
-  products.splice(idx, 1);
-  save(); renderAll();
-  showToast('已刪除', 'err');
-}
-
-// ─── IMAGE ───────────────────────────────────
-function previewImg(e) {
-  const f = e.target.files[0];
-  if (!f) return;
-  const r = new FileReader();
-  r.onload = ev => {
-    document.getElementById('imgPrev').innerHTML =
-      `<img src="${ev.target.result}" style="max-height:90px;border-radius:6px;max-width:100%">`;
-  };
-  r.readAsDataURL(f);
-}
-
-// ─── GOOGLE SHEETS ───────────────────────────
-function openGsModal()  { document.getElementById('gsOverlay').classList.add('open'); }
-function closeGsModal() { document.getElementById('gsOverlay').classList.remove('open'); }
-
-async function loadGS() {
-  const url = document.getElementById('gsUrl').value.trim();
-  if (!url) { showToast('請輸入連結', 'err'); return; }
-  const s = document.getElementById('gsStatus');
-  s.textContent = '⏳ 載入中…';
-
-  try {
-    const res  = await fetch(url);
-    const text = await res.text();
-    const rows = parseCSV(text);
-    const data = rows.slice(1).filter(r => r[0]);
-    const imp  = data.map(r => ({
-      name: r[0]||'', category: r[1]||'其他',
-      twStore: r[2]||'', twPrice: +r[3]||0, twTax: +r[4]||5,
-      jpStore: r[5]||'', jpPrice: +r[6]||0, jpTax: +r[7]||10, jpDutyFree: +r[8]||0,
-      otherCurrency: r[9]||'', otherPrice: +r[10]||0, otherStore: r[11]||'', otherTax: +r[12]||0,
-      notes: r[13]||'', img: null,
-    }));
-    products = imp; cart = [];
-    save(); closeGsModal(); renderAll();
-    showToast(`成功載入 ${imp.length} 筆 ✓`, 'ok');
-  } catch(e) {
-    s.textContent = '❌ 載入失敗，請確認連結正確且已設為公開 CSV';
-    showToast('載入失敗', 'err');
+  // Set store dropdown
+  if(data.store_id){
+    const sel=document.getElementById(`ps${n}`);
+    const found=[...sel.options].find(o=>o.value.startsWith(data.store_id+'|'));
+    if(found) sel.value=found.value; else { sel.value='__c__'; document.getElementById(`pc${n}`).value=data.store_name||''; document.getElementById(`pcw${n}`).style.display='flex'; }
   }
 }
 
-function copyTemplate() {
-  const t = '名稱,分類,台灣商店,台灣價格,台灣稅率,日本商店,日本價格,日本稅率,免稅(0/1),其他幣別,其他價格,其他商店,其他稅率,備註';
-  navigator.clipboard.writeText(t).then(() => showToast('範本已複製 ✓', 'ok'));
+function onSC(n){
+  const v=document.getElementById(`ps${n}`).value;
+  const cw=document.getElementById(`pcw${n}`);
+  cw.style.display=v==='__c__'?'flex':'none';
+  if(v!=='__c__'&&v){
+    const parts=v.split('|');
+    document.getElementById(`pco${n}`).value=parts[2]||'TW';
+  }
 }
 
-// ─── IMPORT / EXPORT ─────────────────────────
-function triggerImport() { document.getElementById('importFile').click(); }
-
-function handleImport(e) {
-  const f = e.target.files[0];
-  if (!f) return;
-  const r = new FileReader();
-  r.onload = ev => {
-    const rows = parseCSV(ev.target.result);
-    const data = rows.slice(1).filter(r => r[0]);
-    const imp  = data.map(r => ({
-      name: r[0]||'', category: r[1]||'其他',
-      twStore: r[2]||'', twPrice: +r[3]||0, twTax: +r[4]||5,
-      jpStore: r[5]||'', jpPrice: +r[6]||0, jpTax: +r[7]||10, jpDutyFree: +r[8]||0,
-      otherCurrency: r[9]||'', otherPrice: +r[10]||0, otherStore: r[11]||'', otherTax: +r[12]||0,
-      notes: r[13]||'', img: null,
-    }));
-    products = [...products, ...imp];
-    save(); renderAll();
-    showToast(`匯入 ${imp.length} 筆 ✓`, 'ok');
-  };
-  r.readAsText(f, 'UTF-8');
-  e.target.value = '';
-}
-
-function parseCSV(text) {
-  return text.trim().split('\n').map(line => {
-    const cols = []; let inQ = false, cur = '';
-    for (const ch of line) {
-      if (ch === '"') { inQ = !inQ; }
-      else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
-      else cur += ch;
+function saveProd(){
+  const name=document.getElementById('fName').value.trim();
+  if(!name){toast('請輸入商品名稱','err');return;}
+  const prices=[];
+  document.querySelectorAll('.price-entry').forEach(entry=>{
+    const n=entry.id.replace('pe','');
+    const sv=document.getElementById(`ps${n}`)?.value||'';
+    let sid='',sname='',country='TW';
+    if(sv==='__c__'||sv===''){
+      sname=document.getElementById(`pc${n}`)?.value.trim()||'未知商店';
+      sid='c_'+sname;
+      country=document.getElementById(`pco${n}`)?.value||'TW';
+    } else {
+      const pts=sv.split('|'); sid=pts[0]||''; sname=pts[1]||''; country=pts[2]||'TW';
     }
-    cols.push(cur.trim());
-    return cols;
+    const ptw=parseFloat(document.getElementById(`ptw${n}`)?.value)||0;
+    const pju=parseFloat(document.getElementById(`pju${n}`)?.value)||0;
+    const pjt=parseFloat(document.getElementById(`pjt${n}`)?.value)||0;
+    if(ptw>0||pju>0||pjt>0) prices.push({store_id:sid,store_name:sname,country,price_twd:ptw,price_jpy_untax:pju,price_jpy_tax:pjt});
   });
+  const p={id:editId||'p'+Date.now(),name,spec:document.getElementById('fSpec').value.trim(),category_id:document.getElementById('fCat').value,note:document.getElementById('fNote').value.trim(),prices};
+  if(editId){ const i=products.findIndex(x=>x.id===editId); if(i>=0) products[i]=p; }
+  else products.push(p);
+  save(); closeAdd(); renderAll();
+  toast(editId?'商品已更新 ✓':'已新增商品 ✓','ok');
 }
 
-function exportCSV() {
-  if (!products.length) { showToast('沒有資料', 'err'); return; }
-  const H = ['名稱','分類','台灣商店','台灣價格','台灣稅率','日本商店','日本價格','日本稅率','免稅(0/1)','其他幣別','其他價格','其他商店','其他稅率','備註','最低換算TWD','最便宜地點','可省TWD'];
-  const rows = products.map(p => {
-    const w = getWinner(p); const sv = getSaving(p);
-    return [p.name,p.category,p.twStore,p.twPrice,p.twTax,p.jpStore,p.jpPrice,p.jpTax,p.jpDutyFree,
-            p.otherCurrency,p.otherPrice,p.otherStore,p.otherTax,p.notes,
-            w ? Math.round(w.twd) : '', w ? w.label : '', sv ? Math.round(sv) : ''];
-  });
-  const csv = [H, ...rows].map(r => r.map(c => `"${c}"`).join(',')).join('\n');
-  const blob = new Blob(['\uFEFF'+csv], { type:'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  Object.assign(document.createElement('a'), { href:url, download:'台日比價清單.csv' }).click();
-  URL.revokeObjectURL(url);
-  showToast('CSV 已下載 ✓', 'ok');
+function delProd(id){
+  if(!confirm(`確定刪除「${products.find(x=>x.id===id)?.name}」？`))return;
+  products=products.filter(x=>x.id!==id);
+  cart=cart.filter(c=>c.id!==id);
+  save(); renderAll(); toast('已刪除','err');
 }
 
-// ─── TOAST ───────────────────────────────────
-function showToast(msg, type = 'ok') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = `toast show ${type}`;
-  clearTimeout(t._t);
-  t._t = setTimeout(() => t.classList.remove('show'), 2800);
+// ── GOOGLE SHEETS ────────────────────────
+function openGS(){ document.getElementById('gsOverlay').classList.add('on'); }
+function closeGS(){ document.getElementById('gsOverlay').classList.remove('on'); }
+
+function saveAndSync(){
+  gsUrl=document.getElementById('gsUrl').value.trim();
+  if(!gsUrl){toast('請輸入 Apps Script 網址','err');return;}
+  localStorage.setItem('pp_gs',gsUrl);
+  closeGS(); syncNow();
 }
 
-// ─── MODAL CLOSE ON OVERLAY CLICK ────────────
-['addOverlay','gsOverlay'].forEach(id => {
-  document.getElementById(id).addEventListener('click', function(e) {
-    if (e.target === this) this.classList.remove('open');
-  });
+async function syncNow(){
+  if(!gsUrl){openGS();return;}
+  const btn=document.getElementById('syncBtn');
+  btn.textContent='⏳ 同步中…'; btn.disabled=true;
+  try{
+    const res=await fetch(gsUrl+'?action=getAll');
+    const data=await res.json();
+    if(!data.success) throw new Error(data.error||'未知錯誤');
+
+    // Update categories
+    if(data.categories){
+      data.categories.forEach(c=>{
+        if(c.category_id) categories[c.category_id]={name:c.category_name||c.category_id,color:c.color||'#888'};
+      });
+      localStorage.setItem('pp_cats',JSON.stringify(categories));
+      buildCatSelect();
+    }
+
+    // Build store map
+    const sm={};
+    if(data.stores) data.stores.forEach(s=>{ sm[s.store_id]=s; });
+
+    // Build products
+    if(data.products){
+      const grp={};
+      data.products.forEach(r=>{ (grp[r.product_id]=grp[r.product_id]||[]).push(r); });
+      const imp=Object.entries(grp).map(([pid,rows])=>{
+        const f=rows[0];
+        return {
+          id:'gs_'+pid,
+          name:f.name||'',
+          spec:f.spec||'',
+          category_id:f.category_id||'other',
+          note:'',
+          prices:rows.map(r=>{
+            const st=sm[r.store_id]||{};
+            return {
+              store_id:r.store_id||'',
+              store_name:st.store_name||r.store_id||'',
+              country:st.country||'TW',
+              price_twd:parseFloat(r.price_twd)||0,
+              price_jpy_untax:parseFloat(r.price_jpy_untaxe||r.price_jpy_untax)||0,
+              price_jpy_tax:parseFloat(r.price_jpy_tax)||0,
+            };
+          }),
+        };
+      });
+      products=products.filter(p=>!p.id.startsWith('gs_'));
+      products=[...products,...imp];
+      save(); renderAll();
+      toast(`✓ 同步完成，共 ${products.length} 件商品`,'ok');
+    }
+  }catch(e){
+    toast('同步失敗：'+e.message,'err');
+  }finally{
+    btn.textContent='🔄 同步'; btn.disabled=false;
+  }
+}
+
+// ── TOAST ───────────────────────────────
+function toast(msg,type='ok'){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className=`toast show ${type}`;
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// Close overlay on bg click
+['addOverlay','gsOverlay'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',function(e){ if(e.target===this) this.classList.remove('on'); });
 });
 
-// ─── DEMO DATA ───────────────────────────────
-function loadDemo() {
-  products = [
-    { name:'化妝水 敏感肌用 200ml', category:'藥妝', twStore:'無印良品', twPrice:390, twTax:5, jpStore:'無印良品', jpPrice:1290, jpTax:10, jpDutyFree:0, otherCurrency:'HKD', otherPrice:88, otherStore:'MUJI HK', otherTax:0, notes:'可退稅', img:null },
-    { name:'維他命C 60錠', category:'保健食品', twStore:'屈臣氏', twPrice:299, twTax:5, jpStore:'マツキヨ', jpPrice:980, jpTax:10, jpDutyFree:0, otherCurrency:'KRW', otherPrice:12000, otherStore:'올리브영', otherTax:10, notes:'', img:null },
-    { name:'黑糖抹茶餅乾', category:'食品', twStore:'全家', twPrice:65, twTax:5, jpStore:'LAWSON', jpPrice:198, jpTax:8, jpDutyFree:0, otherCurrency:'', otherPrice:0, otherStore:'', otherTax:0, notes:'日本限定', img:null },
-    { name:'防曬乳 SPF50+ 60g', category:'藥妝', twStore:'COSMED', twPrice:480, twTax:5, jpStore:'ドラッグストア', jpPrice:1580, jpTax:10, jpDutyFree:1, otherCurrency:'', otherPrice:0, otherStore:'', otherTax:0, notes:'外國人免稅', img:null },
-    { name:'棉質T恤 M號', category:'服飾', twStore:'無印良品', twPrice:790, twTax:5, jpStore:'無印良品', jpPrice:2990, jpTax:10, jpDutyFree:0, otherCurrency:'SGD', otherPrice:29, otherStore:'MUJI SG', otherTax:9, notes:'', img:null },
+// ── DEMO DATA ────────────────────────────
+function loadDemo(){
+  products=[
+    {id:'d1',name:'Biore 防曬乳',spec:'50g',category_id:'drugstore',note:'',prices:[
+      {store_id:'watsons',store_name:'屈臣氏',country:'TW',price_twd:299,price_jpy_untax:0,price_jpy_tax:0},
+      {store_id:'cosmed', store_name:'康是美', country:'TW',price_twd:289,price_jpy_untax:0,price_jpy_tax:0},
+      {store_id:'donki',  store_name:'唐吉訶德',country:'JP',price_twd:0, price_jpy_untax:1470,price_jpy_tax:1617},
+    ]},
+    {id:'d2',name:'肌研 極潤化妝水',spec:'170ml',category_id:'drugstore',note:'',prices:[
+      {store_id:'matsu',store_name:'松本清',country:'JP',price_twd:0,price_jpy_untax:980,price_jpy_tax:1078},
+    ]},
+    {id:'d3',name:'空間芳香油',spec:'200ml',category_id:'groceries',note:'無印良品限定',prices:[
+      {store_id:'muji',   store_name:'無印良品',   country:'TW',price_twd:690,price_jpy_untax:0,   price_jpy_tax:0},
+      {store_id:'muji_jp',store_name:'無印良品(JP)',country:'JP',price_twd:0,  price_jpy_untax:1809,price_jpy_tax:1990},
+    ]},
   ];
   save();
-}
-</script>
-
-<!-- ════ SERVICE WORKER REGISTRATION ════ -->
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
-  });
 }
 </script>
 </body>
