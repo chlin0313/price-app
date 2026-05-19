@@ -1,35 +1,29 @@
 /**
- * ════════════════════════════════════════════════════════
- *  台日比價神器 Pro — Service Worker (sw.js)
- *  PWA 離線快取，版本升級時自動更新
- * ════════════════════════════════════════════════════════
+ * 藥妝比價神器 — Service Worker
+ * 每次部署自動更新，不需要手動清快取
  */
 
-const CACHE_NAME = 'pricepro-v2';
+// ★ 每次更新程式碼時，把這個版本號加1 ★
+const VERSION = 'v10';
+const CACHE_NAME = 'price-app-' + VERSION;
 
-// 要快取的資源（第一次載入後離線也能用）
-const PRECACHE = [
-  './',
-  './index.html',
-  './manifest.json',
-  // Google Fonts（網路版）
-  'https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Shippori+Mincho:wght@400;700;800&display=swap',
-];
-
-// ── 安裝：預先快取核心資源 ──
+// 安裝：快取核心檔案
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(PRECACHE).catch(err => {
-        console.warn('[SW] 部分預快取失敗（通常是字型網路問題）:', err);
-        // 即使字型失敗也繼續安裝
-        return cache.add('./index.html');
-      });
-    }).then(() => self.skipWaiting())
+      return cache.addAll([
+        './',
+        './index.html',
+        './manifest.json',
+      ]).catch(() => cache.add('./index.html'));
+    }).then(() => {
+      // 立刻啟用新版，不等舊版關閉
+      return self.skipWaiting();
+    })
   );
 });
 
-// ── 啟用：清除舊版快取 ──
+// 啟用：清除所有舊版快取
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
@@ -41,65 +35,54 @@ self.addEventListener('activate', event => {
             return caches.delete(key);
           })
       )
-    ).then(() => self.clients.claim())
-  );
-});
-
-// ── Fetch：快取優先，網路備援 ──
-self.addEventListener('fetch', event => {
-  const { request } = event;
-  const url = new URL(request.url);
-
-  // 跳過非同源的 API 請求（Google Sheets CSV、匯率等）
-  if (url.origin !== location.origin &&
-      !url.hostname.includes('fonts.googleapis.com') &&
-      !url.hostname.includes('fonts.gstatic.com')) {
-    return; // 讓瀏覽器直接處理
-  }
-
-  // 跳過 Chrome extension 請求
-  if (request.url.startsWith('chrome-extension://')) return;
-
-  event.respondWith(
-    caches.match(request).then(cached => {
-      if (cached) {
-        // 背景更新（Stale While Revalidate）
-        const fetchPromise = fetch(request).then(response => {
-          if (response && response.status === 200) {
-            const responseClone = response.clone();
-            caches.open(CACHE_NAME).then(cache => {
-              cache.put(request, responseClone);
-            });
-          }
-          return response;
-        }).catch(() => null);
-
-        return cached; // 立即回傳快取版本
-      }
-
-      // 沒有快取，直接網路請求
-      return fetch(request).then(response => {
-        if (!response || response.status !== 200 || response.type === 'opaque') {
-          return response;
-        }
-        const responseClone = response.clone();
-        caches.open(CACHE_NAME).then(cache => {
-          cache.put(request, responseClone);
-        });
-        return response;
-      }).catch(() => {
-        // 完全離線時，回傳主頁
-        if (request.mode === 'navigate') {
-          return caches.match('./index.html');
-        }
-      });
+    ).then(() => {
+      // 立刻接管所有頁面
+      return self.clients.claim();
     })
   );
 });
 
-// ── 接收主頁推送的訊息 ──
-self.addEventListener('message', event => {
-  if (event.data === 'skipWaiting') {
-    self.skipWaiting();
+// Fetch：網路優先，快取備援
+self.addEventListener('fetch', event => {
+  const { request } = event;
+
+  // 跳過非 GET 請求
+  if (request.method !== 'GET') return;
+
+  // 跳過 Chrome extension
+  if (request.url.startsWith('chrome-extension://')) return;
+
+  // Google Sheets / Apps Script 請求不快取，永遠走網路
+  if (request.url.includes('script.google.com') ||
+      request.url.includes('docs.google.com') ||
+      request.url.includes('googleapis.com')) {
+    return;
   }
+
+  event.respondWith(
+    fetch(request)
+      .then(response => {
+        // 成功取得新版，更新快取
+        if (response && response.status === 200) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
+        }
+        return response;
+      })
+      .catch(() => {
+        // 網路失敗，用快取版本
+        return caches.match(request).then(cached => {
+          if (cached) return cached;
+          // 完全離線時回傳主頁
+          if (request.mode === 'navigate') {
+            return caches.match('./index.html');
+          }
+        });
+      })
+  );
+});
+
+// 接收訊息
+self.addEventListener('message', event => {
+  if (event.data === 'skipWaiting') self.skipWaiting();
 });
