@@ -4,7 +4,7 @@
  */
 
 // ★ 每次更新程式碼時，把這個版本號加1 ★
-const VERSION = 'v22';
+const VERSION = 'v23';
 const CACHE_NAME = 'price-app-' + VERSION;
 
 // 安裝：快取核心檔案
